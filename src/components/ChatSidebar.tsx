@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface ChatHistory {
+interface Chat {
   id: string;
   title: string;
   timestamp: string;
@@ -26,36 +26,24 @@ interface ChatSidebarProps {
   onToggle: () => void;
   onSettingsClick: () => void;
   onAuthClick: () => void;
+  chats: Chat[];
+  activeChat: string;
+  onChatSelect: (chatId: string) => void;
+  onNewChat: () => void;
+  onDeleteChat: (chatId: string) => void;
 }
 
 export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   isOpen,
   onToggle,
   onSettingsClick,
-  onAuthClick
+  onAuthClick,
+  chats,
+  activeChat,
+  onChatSelect,
+  onNewChat,
+  onDeleteChat
 }) => {
-  const [activeChat, setActiveChat] = useState<string>('1');
-  
-  const mockChatHistory: ChatHistory[] = [
-    {
-      id: '1',
-      title: 'AI Assistant Chat',
-      timestamp: 'Just now',
-      preview: 'Hello! I\'m your AI assistant...'
-    },
-    {
-      id: '2',
-      title: 'Photo Enhancement',
-      timestamp: '2 hours ago',
-      preview: 'Can you help me enhance this image?'
-    },
-    {
-      id: '3',
-      title: 'Document Analysis',
-      timestamp: 'Yesterday',
-      preview: 'Please analyze this PDF document...'
-    }
-  ];
 
   return (
     <>
@@ -95,7 +83,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
         <div className="p-4">
           <Button 
             className="w-full bg-gradient-primary text-primary-foreground shadow-glow hover:shadow-glow-intense transition-all duration-smooth"
-            onClick={() => setActiveChat('')}
+            onClick={onNewChat}
           >
             <Plus className="w-4 h-4 mr-2" />
             New Chat
@@ -108,15 +96,15 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
               Recent Chats
             </h3>
-            {mockChatHistory.map((chat) => (
+            {chats.map((chat) => (
               <div
                 key={chat.id}
-                onClick={() => setActiveChat(chat.id)}
+                onClick={() => onChatSelect(chat.id)}
                 className={cn(
-                  "group p-3 rounded-lg cursor-pointer transition-all duration-smooth border",
+                  "group p-3 rounded-lg cursor-pointer transition-all duration-smooth border animate-fade-in",
                   activeChat === chat.id 
-                    ? "bg-surface border-primary shadow-custom-sm" 
-                    : "hover:bg-surface-hover border-transparent"
+                    ? "bg-surface border-primary shadow-custom-sm scale-[0.98]" 
+                    : "hover:bg-surface-hover border-transparent hover:scale-[0.99]"
                 )}
               >
                 <div className="flex items-start justify-between">
@@ -134,6 +122,10 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteChat(chat.id);
+                    }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
                   >
                     <Trash2 className="w-3 h-3" />

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import {
   Dialog,
   DialogContent,
@@ -38,6 +39,7 @@ interface SettingsModalProps {
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
+  const { theme, setTheme } = useTheme();
   const [settings, setSettings] = useState({
     // Profile
     displayName: 'John Doe',
@@ -45,7 +47,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     
     // Preferences
     language: 'en',
-    theme: 'dark',
     fontSize: [14],
     autoSave: true,
     soundEnabled: true,
@@ -69,6 +70,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
   const updateSetting = (key: string, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
   };
 
   const handleSave = () => {
@@ -188,7 +193,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   
                   <div className="space-y-2">
                     <Label>Theme</Label>
-                    <Select value={settings.theme} onValueChange={(value) => updateSetting('theme', value)}>
+                    <Select value={theme} onValueChange={handleThemeChange}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>

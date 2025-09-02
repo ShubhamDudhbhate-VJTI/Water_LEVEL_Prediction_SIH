@@ -7,36 +7,28 @@ import { SettingsModal } from "@/components/SettingsModal";
 import { AuthModal } from "@/components/AuthModal";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface Message {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant';
-  timestamp: string;
-  attachments?: Array<{
-    type: 'image' | 'document' | 'file';
-    name: string;
-    url: string;
-    size?: string;
-  }>;
-}
+import { useChatManager } from "@/hooks/useChatManager";
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: "Hello! I'm your AI assistant. I'm here to help answer questions, provide information, and have meaningful conversations. What would you like to talk about today?",
-      role: 'assistant',
-      timestamp: '19:14'
-    }
-  ]);
+  
+  const {
+    chats,
+    activeChat,
+    setActiveChat,
+    createNewChat,
+    addMessage,
+    deleteChat,
+    getCurrentChat
+  } = useChatManager();
 
   const handleSendMessage = (content: string, files?: any[]) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
+    if (!activeChat) return;
+
+    // Add user message
+    addMessage(activeChat, {
       content,
       role: 'user',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -46,19 +38,15 @@ const Index = () => {
         url: file.preview || '#',
         size: file.size
       }))
-    };
-
-    setMessages(prev => [...prev, userMessage]);
+    });
 
     // Simulate AI response
     setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
+      addMessage(activeChat, {
         content: "Thank you for your message! I'm processing your request and will provide a helpful response. This is a demo of the AI chat interface with support for file uploads, settings, and user authentication.",
         role: 'assistant',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, aiResponse]);
+      });
     }, 1000);
   };
 
@@ -90,6 +78,17 @@ const Index = () => {
           onToggle={() => setSidebarOpen(!sidebarOpen)}
           onSettingsClick={() => setSettingsOpen(true)}
           onAuthClick={() => setAuthOpen(true)}
+          chats={chats}
+          activeChat={activeChat}
+          onChatSelect={(chatId) => {
+            setActiveChat(chatId);
+            setSidebarOpen(false); // Close sidebar on mobile after selection
+          }}
+          onNewChat={() => {
+            createNewChat();
+            setSidebarOpen(false); // Close sidebar on mobile after creating new chat
+          }}
+          onDeleteChat={deleteChat}
         />
 
         {/* Main Chat Area */}
@@ -120,7 +119,7 @@ const Index = () => {
           </div>
 
           {/* Messages Area */}
-          <ChatMessages messages={messages} />
+          <ChatMessages messages={getCurrentChat()?.messages || []} />
 
           {/* Input Area */}
           <ChatInput onSendMessage={handleSendMessage} />
