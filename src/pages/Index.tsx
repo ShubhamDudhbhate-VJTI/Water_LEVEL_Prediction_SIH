@@ -105,7 +105,7 @@ const Index = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="text-foreground lg:hidden"
+                className="text-foreground"
               >
                 <Menu className="w-5 h-5" />
               </Button>

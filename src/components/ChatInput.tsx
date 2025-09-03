@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "./FileUpload";
+import { nanoid } from "nanoid";
 import { 
   Send, 
   Paperclip, 
@@ -24,6 +25,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   const [isRecording, setIsRecording] = useState(false);
   const [showFileUpload, setShowFileUpload] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<any[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -81,6 +83,59 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
       default: return FileText;
     }
   };
+
+  // Handle paste operations for images and files
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    const items = Array.from(e.clipboardData.items);
+    
+    items.forEach((item) => {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          const fileObj = {
+            id: nanoid(),
+            name: `pasted-image-${Date.now()}.${file.type.split('/')[1]}`,
+            type: 'image',
+            size: file.size,
+            file: file,
+            preview: URL.createObjectURL(file)
+          };
+          setAttachedFiles(prev => [...prev, fileObj]);
+        }
+      }
+    });
+  }, []);
+
+  // Handle drag and drop
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    
+    files.forEach((file) => {
+      const fileObj = {
+        id: nanoid(),
+        name: file.name,
+        type: file.type.startsWith('image/') ? 'image' : 
+              file.type.startsWith('video/') ? 'video' : 'document',
+        size: file.size,
+        file: file,
+        preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined
+      };
+      setAttachedFiles(prev => [...prev, fileObj]);
+    });
+  }, []);
 
   return (
     <div className="border-t border-border bg-background/95 backdrop-blur-sm">
@@ -168,19 +223,30 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
             </Button>
           </div>
 
-          {/* Text Input */}
-          <div className="flex-1 relative">
+          {/* Text Input with Drag & Drop Support */}
+          <div 
+            className={cn(
+              "flex-1 relative transition-all duration-200",
+              isDragging && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+            )}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             <Textarea
               ref={textareaRef}
               value={message}
               onChange={handleTextareaChange}
               onKeyPress={handleKeyPress}
+              onPaste={handlePaste}
               placeholder={
                 disabled
                   ? "Please sign in to start chatting..."
                   : isRecording 
                   ? "Recording... Click the mic to stop" 
-                  : "Type your message or drag & drop files... (Shift+Enter for new line)"
+                  : isDragging
+                  ? "Drop files here..."
+                  : "Message AI Assistant... (Paste images, drag files, or use Shift+Enter for new line)"
               }
               disabled={disabled || isRecording}
               className={cn(
@@ -207,7 +273,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
         {/* Quick Actions */}
         <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-4">
-            <span>Press Enter to send, Shift+Enter for new line</span>
+            <span>📎 Paste images, drag files • Enter to send • Shift+Enter for new line</span>
           </div>
           <div className="flex items-center gap-2">
             <span>Powered by AI Assistant</span>
