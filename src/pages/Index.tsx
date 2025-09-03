@@ -26,15 +26,8 @@ const Index = () => {
     getCurrentChat
   } = useChatManager();
 
-  // Show auth modal if user is not authenticated
-  React.useEffect(() => {
-    if (!loading && !user) {
-      setAuthOpen(true);
-    }
-  }, [user, loading]);
-
   const handleSendMessage = (content: string, files?: any[]) => {
-    if (!activeChat || !user) return;
+    if (!activeChat) return;
 
     // Add user message
     addMessage(activeChat, {
@@ -137,7 +130,7 @@ const Index = () => {
 
       {/* Modals */}
       <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
-      <AuthModal isOpen={authOpen} onClose={() => user ? setAuthOpen(false) : undefined} />
+      <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
     </div>
   );
 };
