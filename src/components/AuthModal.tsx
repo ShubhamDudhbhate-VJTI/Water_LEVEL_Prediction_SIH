@@ -22,6 +22,7 @@ import {
   Apple
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -29,9 +30,9 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+  const { signIn, signUp, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   
   const [loginForm, setLoginForm] = useState({
     email: '',
@@ -47,43 +48,33 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Login attempt:', loginForm);
-      setIsLoading(false);
+    const { error } = await signIn(loginForm.email, loginForm.password);
+    
+    if (!error) {
       onClose();
-    }, 1500);
+      setLoginForm({ email: '', password: '' });
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (signupForm.password !== signupForm.confirmPassword) {
-      alert('Passwords do not match!');
       return;
     }
     
-    setIsLoading(true);
+    const { error } = await signUp(signupForm.email, signupForm.password, signupForm.name);
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Signup attempt:', signupForm);
-      setIsLoading(false);
+    if (!error) {
       onClose();
-    }, 1500);
+      setSignupForm({ name: '', email: '', password: '', confirmPassword: '' });
+    }
   };
 
-  const handleSocialAuth = (provider: string) => {
+  const handleSocialAuth = async (provider: string) => {
+    // Social auth implementation would go here
     console.log(`${provider} authentication`);
-    setIsLoading(true);
-    
-    // Simulate social auth
-    setTimeout(() => {
-      setIsLoading(false);
-      onClose();
-    }, 1000);
   };
 
   return (
@@ -157,9 +148,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-primary text-primary-foreground"
-                disabled={isLoading}
+                disabled={loading}
               >
-                {isLoading ? 'Signing in...' : 'Sign In'}
+                {loading ? 'Signing in...' : 'Sign In'}
               </Button>
               
               <div className="text-center">
@@ -183,7 +174,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 variant="outline" 
                 className="w-full"
                 onClick={() => handleSocialAuth('Google')}
-                disabled={isLoading}
+                disabled={loading}
               >
                 <Chrome className="h-4 w-4" />
               </Button>
@@ -191,7 +182,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 variant="outline" 
                 className="w-full"
                 onClick={() => handleSocialAuth('GitHub')}
-                disabled={isLoading}
+                disabled={loading}
               >
                 <Github className="h-4 w-4" />
               </Button>
@@ -199,7 +190,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 variant="outline" 
                 className="w-full"
                 onClick={() => handleSocialAuth('Apple')}
-                disabled={isLoading}
+                disabled={loading}
               >
                 <Apple className="h-4 w-4" />
               </Button>
@@ -301,9 +292,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-primary text-primary-foreground"
-                disabled={isLoading}
+                disabled={loading}
               >
-                {isLoading ? 'Creating account...' : 'Create Account'}
+                {loading ? 'Creating account...' : 'Create Account'}
               </Button>
               
               <p className="text-xs text-muted-foreground text-center">
@@ -332,7 +323,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 variant="outline" 
                 className="w-full"
                 onClick={() => handleSocialAuth('Google')}
-                disabled={isLoading}
+                disabled={loading}
               >
                 <Chrome className="h-4 w-4" />
               </Button>
@@ -340,7 +331,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 variant="outline" 
                 className="w-full"
                 onClick={() => handleSocialAuth('GitHub')}
-                disabled={isLoading}
+                disabled={loading}
               >
                 <Github className="h-4 w-4" />
               </Button>
@@ -348,7 +339,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 variant="outline" 
                 className="w-full"
                 onClick={() => handleSocialAuth('Apple')}
-                disabled={isLoading}
+                disabled={loading}
               >
                 <Apple className="h-4 w-4" />
               </Button>

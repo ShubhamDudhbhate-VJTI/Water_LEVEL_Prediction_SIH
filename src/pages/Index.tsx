@@ -8,8 +8,10 @@ import { AuthModal } from "@/components/AuthModal";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChatManager } from "@/hooks/useChatManager";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
+  const { user, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -24,8 +26,15 @@ const Index = () => {
     getCurrentChat
   } = useChatManager();
 
+  // Show auth modal if user is not authenticated
+  React.useEffect(() => {
+    if (!loading && !user) {
+      setAuthOpen(true);
+    }
+  }, [user, loading]);
+
   const handleSendMessage = (content: string, files?: any[]) => {
-    if (!activeChat) return;
+    if (!activeChat || !user) return;
 
     // Add user message
     addMessage(activeChat, {
@@ -122,13 +131,13 @@ const Index = () => {
           <ChatMessages messages={getCurrentChat()?.messages || []} />
 
           {/* Input Area */}
-          <ChatInput onSendMessage={handleSendMessage} />
+          <ChatInput onSendMessage={handleSendMessage} disabled={!user} />
         </div>
       </div>
 
       {/* Modals */}
       <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
-      <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
+      <AuthModal isOpen={authOpen} onClose={() => user ? setAuthOpen(false) : undefined} />
     </div>
   );
 };

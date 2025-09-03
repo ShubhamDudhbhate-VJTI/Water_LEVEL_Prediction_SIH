@@ -13,6 +13,7 @@ import {
   Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Chat {
   id: string;
@@ -44,6 +45,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onNewChat,
   onDeleteChat
 }) => {
+  const { user, signOut } = useAuth();
 
   return (
     <>
@@ -148,21 +150,30 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             <Settings className="w-4 h-4 mr-3" />
             Settings
           </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={onAuthClick}
-          >
-            <User className="w-4 h-4 mr-3" />
-            Sign In / Sign Up
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-muted-foreground hover:text-destructive"
-          >
-            <LogOut className="w-4 h-4 mr-3" />
-            Sign Out
-          </Button>
+          {user ? (
+            <>
+              <div className="px-3 py-2 text-sm text-muted-foreground">
+                Signed in as {user.email}
+              </div>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-muted-foreground hover:text-destructive"
+                onClick={signOut}
+              >
+                <LogOut className="w-4 h-4 mr-3" />
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={onAuthClick}
+            >
+              <User className="w-4 h-4 mr-3" />
+              Sign In / Sign Up
+            </Button>
+          )}
         </div>
       </div>
     </>

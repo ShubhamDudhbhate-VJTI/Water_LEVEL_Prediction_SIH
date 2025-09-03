@@ -176,9 +176,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
               onChange={handleTextareaChange}
               onKeyPress={handleKeyPress}
               placeholder={
-                isRecording 
+                disabled
+                  ? "Please sign in to start chatting..."
+                  : isRecording 
                   ? "Recording... Click the mic to stop" 
-                  : "Type your message... (Shift+Enter for new line)"
+                  : "Type your message or drag & drop files... (Shift+Enter for new line)"
               }
               disabled={disabled || isRecording}
               className={cn(
