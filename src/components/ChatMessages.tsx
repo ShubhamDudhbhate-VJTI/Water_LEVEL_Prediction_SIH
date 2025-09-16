@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,20 @@ interface ChatMessagesProps {
 export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+  const bottomRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages.length]);
+
+  const handleDownload = (url: string, name: string) => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const MessageActions = ({ message }: { message: Message }) => {
@@ -89,7 +103,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
             <p className="text-xs text-muted-foreground">{attachment.size}</p>
           )}
         </div>
-        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+        <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => handleDownload(attachment.url, attachment.name)}>
           <Download className="w-3 h-3" />
         </Button>
       </div>
@@ -169,6 +183,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
             </div>
           ))
         )}
+        <div ref={bottomRef} />
       </div>
     </ScrollArea>
   );

@@ -168,6 +168,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const items = Array.from(e.clipboardData.items);
     
+    // Handle pasted images
     items.forEach((item) => {
       if (item.type.startsWith('image/')) {
         const file = item.getAsFile();
@@ -191,6 +192,32 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
         }
       }
     });
+
+    // Handle pasted files (non-images)
+    const files = Array.from(e.clipboardData.files || []);
+    if (files.length > 0) {
+      files.forEach((file) => {
+        if (validateFile(file)) {
+          const isImage = file.type.startsWith('image/');
+          const fileObj = {
+            id: nanoid(),
+            name: file.name || `pasted-file-${Date.now()}`,
+            type: isImage ? 'image' : 'document',
+            size: formatFileSize(file.size),
+            file,
+            preview: URL.createObjectURL(file),
+            status: 'uploading'
+          };
+          setAttachedFiles(prev => [...prev, fileObj]);
+          simulateUpload(fileObj.id);
+        }
+      });
+
+      toast({
+        title: `${files.length} item(s) pasted`,
+        description: "Processing pasted content...",
+      });
+    }
   }, [validateFile, simulateUpload, formatFileSize, toast]);
 
   // Handle drag and drop
@@ -220,7 +247,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
                 file.type.startsWith('audio/') ? 'audio' : 'document',
           size: formatFileSize(file.size),
           file: file,
-          preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+          preview: URL.createObjectURL(file),
           status: 'uploading'
         };
         setAttachedFiles(prev => [...prev, fileObj]);

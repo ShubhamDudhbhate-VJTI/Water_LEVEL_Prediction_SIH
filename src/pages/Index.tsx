@@ -35,7 +35,7 @@ const Index = () => {
       role: 'user',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       attachments: files?.map(file => ({
-        type: file.type,
+        type: file.type === 'image' ? 'image' : 'document',
         name: file.name,
         url: file.preview || '#',
         size: file.size
