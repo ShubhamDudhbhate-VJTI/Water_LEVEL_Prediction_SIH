@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "./FileUpload";
+import { useToast } from "@/hooks/use-toast";
 import { nanoid } from "nanoid";
 import { 
   Send, 
@@ -11,7 +12,11 @@ import {
   X,
   Image as ImageIcon,
   FileText,
-  Video
+  Video,
+  Music,
+  File as FileIcon,
+  Check,
+  AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,7 +31,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   const [showFileUpload, setShowFileUpload] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<any[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{[key: string]: number}>({});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,9 +42,22 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
       return;
     }
 
-    onSendMessage(message.trim(), attachedFiles);
+    // Only send files that are fully uploaded
+    const readyFiles = attachedFiles.filter(f => (uploadProgress[f.id] || 0) >= 100);
+    
+    if (attachedFiles.length > 0 && readyFiles.length === 0) {
+      toast({
+        title: "Files not ready",
+        description: "Please wait for files to finish uploading.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    onSendMessage(message.trim(), readyFiles);
     setMessage('');
     setAttachedFiles([]);
+    setUploadProgress({});
     setShowFileUpload(false);
     
     // Reset textarea height
@@ -64,15 +84,16 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
 
   const toggleRecording = () => {
     setIsRecording(!isRecording);
-    // Voice recording logic would go here
+    if (!isRecording) {
+      toast({
+        title: "Voice recording",
+        description: "Voice recording feature coming soon!",
+      });
+    }
   };
 
   const handleFilesUploaded = (files: any[]) => {
     setAttachedFiles(prev => [...prev, ...files]);
-  };
-
-  const removeAttachedFile = (fileId: string) => {
-    setAttachedFiles(prev => prev.filter(f => f.id !== fileId));
   };
 
   const getFileIcon = (type: string) => {
@@ -80,9 +101,68 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
       case 'image': return ImageIcon;
       case 'document': return FileText;
       case 'video': return Video;
-      default: return FileText;
+      case 'audio': return Music;
+      default: return FileIcon;
     }
   };
+
+  // File validation
+  const validateFile = useCallback((file: File) => {
+    const maxSize = 20 * 1024 * 1024; // 20MB
+    const allowedTypes = [
+      'image/', 'video/', 'audio/', 'text/', 'application/pdf',
+      'application/msword', 'application/vnd.openxmlformats-officedocument'
+    ];
+    
+    if (file.size > maxSize) {
+      toast({
+        title: "File too large",
+        description: `${file.name} is larger than 20MB. Please choose a smaller file.`,
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    const isValidType = allowedTypes.some(type => file.type.startsWith(type));
+    if (!isValidType) {
+      toast({
+        title: "Unsupported file type",
+        description: `${file.name} is not a supported file type.`,
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    return true;
+  }, [toast]);
+
+  // Format file size
+  const formatFileSize = useCallback((bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }, []);
+
+  // Simulate file upload with progress
+  const simulateUpload = useCallback((fileId: string) => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 15 + 5;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        setUploadProgress(prev => ({ ...prev, [fileId]: 100 }));
+        toast({
+          title: "File ready",
+          description: "File successfully processed and ready to send.",
+        });
+      } else {
+        setUploadProgress(prev => ({ ...prev, [fileId]: Math.floor(progress) }));
+      }
+    }, 150);
+  }, [toast]);
 
   // Handle paste operations for images and files
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
@@ -91,20 +171,27 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
     items.forEach((item) => {
       if (item.type.startsWith('image/')) {
         const file = item.getAsFile();
-        if (file) {
+        if (file && validateFile(file)) {
           const fileObj = {
             id: nanoid(),
             name: `pasted-image-${Date.now()}.${file.type.split('/')[1]}`,
             type: 'image',
-            size: file.size,
+            size: formatFileSize(file.size),
             file: file,
-            preview: URL.createObjectURL(file)
+            preview: URL.createObjectURL(file),
+            status: 'uploading'
           };
           setAttachedFiles(prev => [...prev, fileObj]);
+          simulateUpload(fileObj.id);
+          
+          toast({
+            title: "Image pasted",
+            description: "Processing pasted image...",
+          });
         }
       }
     });
-  }, []);
+  }, [validateFile, simulateUpload, formatFileSize, toast]);
 
   // Handle drag and drop
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -124,16 +211,38 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
     const files = Array.from(e.dataTransfer.files);
     
     files.forEach((file) => {
-      const fileObj = {
-        id: nanoid(),
-        name: file.name,
-        type: file.type.startsWith('image/') ? 'image' : 
-              file.type.startsWith('video/') ? 'video' : 'document',
-        size: file.size,
-        file: file,
-        preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined
-      };
-      setAttachedFiles(prev => [...prev, fileObj]);
+      if (validateFile(file)) {
+        const fileObj = {
+          id: nanoid(),
+          name: file.name,
+          type: file.type.startsWith('image/') ? 'image' : 
+                file.type.startsWith('video/') ? 'video' : 
+                file.type.startsWith('audio/') ? 'audio' : 'document',
+          size: formatFileSize(file.size),
+          file: file,
+          preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+          status: 'uploading'
+        };
+        setAttachedFiles(prev => [...prev, fileObj]);
+        simulateUpload(fileObj.id);
+      }
+    });
+    
+    if (files.length > 0) {
+      toast({
+        title: `${files.length} file(s) dropped`,
+        description: "Processing dropped files...",
+      });
+    }
+  }, [validateFile, simulateUpload, formatFileSize, toast]);
+
+  // Remove attached file
+  const removeFile = useCallback((fileId: string) => {
+    setAttachedFiles(prev => prev.filter(f => f.id !== fileId));
+    setUploadProgress(prev => {
+      const newProgress = { ...prev };
+      delete newProgress[fileId];
+      return newProgress;
     });
   }, []);
 
@@ -158,31 +267,101 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
           </div>
         )}
 
-        {/* Attached Files */}
+        {/* Attached Files Preview */}
         {attachedFiles.length > 0 && (
-          <div className="mb-4 flex flex-wrap gap-2">
-            {attachedFiles.map((file) => {
-              const FileIcon = getFileIcon(file.type);
-              return (
-                <div
-                  key={file.id}
-                  className="flex items-center gap-2 px-3 py-2 bg-surface border border-border rounded-lg"
-                >
-                  <FileIcon className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground truncate max-w-32">
-                    {file.name}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeAttachedFile(file.id)}
-                    className="h-5 w-5 p-0 text-muted-foreground hover:text-destructive"
+          <div className="mb-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">
+                Attached Files ({attachedFiles.length})
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setAttachedFiles([]);
+                  setUploadProgress({});
+                }}
+                className="h-6 text-xs text-muted-foreground hover:text-destructive"
+              >
+                Clear all
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {attachedFiles.map((file) => {
+                const Icon = getFileIcon(file.type);
+                const progress = uploadProgress[file.id] || 0;
+                const isCompleted = progress >= 100;
+                
+                return (
+                  <div
+                    key={file.id}
+                    className="flex items-center gap-3 p-3 bg-surface rounded-lg border border-border hover:bg-surface-hover transition-colors"
                   >
-                    <X className="w-3 h-3" />
-                  </Button>
-                </div>
-              );
-            })}
+                    {/* File preview or icon */}
+                    <div className="relative flex-shrink-0">
+                      {file.preview ? (
+                        <div className="relative">
+                          <img 
+                            src={file.preview} 
+                            alt={file.name}
+                            className="w-12 h-12 rounded object-cover"
+                          />
+                          {!isCompleted && (
+                            <div className="absolute inset-0 bg-black/50 rounded flex items-center justify-center">
+                              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 rounded bg-primary/10 flex items-center justify-center">
+                          <Icon className="w-6 h-6 text-primary" />
+                        </div>
+                      )}
+                      
+                      {/* Status indicator */}
+                      {isCompleted && (
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* File info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {file.name}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-muted-foreground">{file.size}</span>
+                        {!isCompleted && (
+                          <span className="text-xs text-primary">{progress}%</span>
+                        )}
+                      </div>
+                      
+                      {/* Progress bar */}
+                      {!isCompleted && (
+                        <div className="mt-2 w-full bg-border rounded-full h-1">
+                          <div 
+                            className="bg-primary h-1 rounded-full transition-all duration-300"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Remove button */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile(file.id)}
+                      className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
@@ -243,10 +422,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
                 disabled
                   ? "Please sign in to start chatting..."
                   : isRecording 
-                  ? "Recording... Click the mic to stop" 
+                  ? "🎤 Recording... Click the mic to stop" 
                   : isDragging
-                  ? "Drop files here..."
-                  : "Message AI Assistant... (Paste images, drag files, or use Shift+Enter for new line)"
+                  ? "📁 Drop files here to attach..."
+                  : "💬 Message AI Assistant... (Paste images 📷, drag files 📎, or Shift+Enter for new line)"
               }
               disabled={disabled || isRecording}
               className={cn(
@@ -273,9 +452,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
         {/* Quick Actions */}
         <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-4">
-            <span>📎 Paste images, drag files • Enter to send • Shift+Enter for new line</span>
+            <span>💡 Pro tip: Paste images directly, drag files, or click 📎 to attach</span>
           </div>
           <div className="flex items-center gap-2">
+            {attachedFiles.length > 0 && (
+              <span className="text-primary">
+                {attachedFiles.filter(f => (uploadProgress[f.id] || 0) >= 100).length}/{attachedFiles.length} ready
+              </span>
+            )}
             <span>Powered by AI Assistant</span>
           </div>
         </div>
