@@ -54,45 +54,43 @@ const Index = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="h-screen bg-chat-background text-foreground overflow-hidden w-full">
-        {/* Global Header with Sidebar Trigger */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <div className="flex items-center gap-3">
-            <SidebarTrigger className="text-foreground" />
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-gradient-primary flex items-center justify-center">
-                <span className="text-xs font-bold text-primary-foreground">AI</span>
+    <SidebarProvider defaultOpen={true} className="w-full">
+      <div className="h-screen bg-chat-background text-foreground overflow-hidden w-full flex">
+        {/* Sidebar */}
+        <ChatSidebar
+          onSettingsClick={() => setSettingsOpen(true)}
+          onAuthClick={() => setAuthOpen(true)}
+          chats={chats}
+          activeChat={activeChat}
+          onChatSelect={setActiveChat}
+          onNewChat={createNewChat}
+          onDeleteChat={deleteChat}
+        />
+
+        {/* Main Chat Area */}
+        <div className="flex-1 flex flex-col min-w-0 h-full">
+          {/* Global Header with Sidebar Trigger */}
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <div className="flex items-center gap-3">
+              <SidebarTrigger className="text-foreground hover:bg-muted p-2 rounded-md transition-colors" />
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded bg-gradient-primary flex items-center justify-center">
+                  <span className="text-xs font-bold text-primary-foreground">AI</span>
+                </div>
+                <h1 className="font-semibold text-foreground">AI Assistant</h1>
               </div>
-              <h1 className="font-semibold text-foreground">AI Assistant</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+              <span className="text-sm text-muted-foreground">Ready to chat</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
-            <span className="text-sm text-muted-foreground">Ready to chat</span>
-          </div>
-        </div>
 
-        <div className="flex min-h-0 flex-1 w-full">
-          {/* Sidebar */}
-          <ChatSidebar
-            onSettingsClick={() => setSettingsOpen(true)}
-            onAuthClick={() => setAuthOpen(true)}
-            chats={chats}
-            activeChat={activeChat}
-            onChatSelect={setActiveChat}
-            onNewChat={createNewChat}
-            onDeleteChat={deleteChat}
-          />
+          {/* Messages Area */}
+          <ChatMessages messages={getCurrentChat()?.messages || []} />
 
-          {/* Main Chat Area */}
-          <div className="flex-1 flex flex-col min-w-0">
-            {/* Messages Area */}
-            <ChatMessages messages={getCurrentChat()?.messages || []} />
-
-            {/* Input Area */}
-            <ChatInput onSendMessage={handleSendMessage} disabled={!user} />
-          </div>
+          {/* Input Area */}
+          <ChatInput onSendMessage={handleSendMessage} disabled={!user} />
         </div>
 
         {/* Modals */}
