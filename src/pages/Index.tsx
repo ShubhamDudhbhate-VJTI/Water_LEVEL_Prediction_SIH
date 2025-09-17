@@ -54,8 +54,8 @@ const Index = () => {
   };
 
   return (
-    <SidebarProvider defaultOpen={true} className="w-full">
-      <div className="h-screen bg-chat-background text-foreground overflow-hidden w-full flex">
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex h-screen w-full bg-chat-background text-foreground">
         {/* Sidebar */}
         <ChatSidebar
           onSettingsClick={() => setSettingsOpen(true)}
@@ -67,10 +67,10 @@ const Index = () => {
           onDeleteChat={deleteChat}
         />
 
-        {/* Main Chat Area */}
-        <div className="flex-1 flex flex-col min-w-0 h-full">
-          {/* Global Header with Sidebar Trigger */}
-          <div className="flex items-center justify-between p-4 border-b border-border">
+        {/* Main Content Area */}
+        <main className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <header className="flex items-center justify-between p-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex items-center gap-3">
               <SidebarTrigger className="text-foreground hover:bg-muted p-2 rounded-md transition-colors" />
               <div className="flex items-center gap-2">
@@ -84,14 +84,14 @@ const Index = () => {
               <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
               <span className="text-sm text-muted-foreground">Ready to chat</span>
             </div>
+          </header>
+
+          {/* Chat Area */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <ChatMessages messages={getCurrentChat()?.messages || []} />
+            <ChatInput onSendMessage={handleSendMessage} disabled={!user} />
           </div>
-
-          {/* Messages Area */}
-          <ChatMessages messages={getCurrentChat()?.messages || []} />
-
-          {/* Input Area */}
-          <ChatInput onSendMessage={handleSendMessage} disabled={!user} />
-        </div>
+        </main>
 
         {/* Modals */}
         <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
