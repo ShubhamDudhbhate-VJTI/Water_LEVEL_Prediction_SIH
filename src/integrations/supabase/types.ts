@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_analytics: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      chat_sessions: {
+        Row: {
+          ended_at: string | null
+          id: string
+          metadata: Json | null
+          session_type: string
+          started_at: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          ended_at?: string | null
+          id?: string
+          metadata?: Json | null
+          session_type?: string
+          started_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          ended_at?: string | null
+          id?: string
+          metadata?: Json | null
+          session_type?: string
+          started_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       comment_likes: {
         Row: {
           comment_id: string
@@ -81,6 +135,80 @@ export type Database = {
           },
         ]
       }
+      files: {
+        Row: {
+          created_at: string
+          file_size: number
+          file_type: string
+          filename: string
+          id: string
+          message_id: string | null
+          storage_path: string
+          thumbnail_path: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_size: number
+          file_type: string
+          filename: string
+          id?: string
+          message_id?: string | null
+          storage_path: string
+          thumbnail_path?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_size?: number
+          file_type?: string
+          filename?: string
+          id?: string
+          message_id?: string | null
+          storage_path?: string
+          thumbnail_path?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "files_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -108,6 +236,69 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      search_history: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          search_term: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          search_term: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          search_term?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          auto_play_audio: boolean
+          created_at: string
+          font_size: string
+          id: string
+          notifications_enabled: boolean
+          preferences: Json | null
+          theme: string
+          updated_at: string
+          user_id: string | null
+          voice_id: string | null
+        }
+        Insert: {
+          auto_play_audio?: boolean
+          created_at?: string
+          font_size?: string
+          id?: string
+          notifications_enabled?: boolean
+          preferences?: Json | null
+          theme?: string
+          updated_at?: string
+          user_id?: string | null
+          voice_id?: string | null
+        }
+        Update: {
+          auto_play_audio?: boolean
+          created_at?: string
+          font_size?: string
+          id?: string
+          notifications_enabled?: boolean
+          preferences?: Json | null
+          theme?: string
+          updated_at?: string
+          user_id?: string | null
+          voice_id?: string | null
         }
         Relationships: []
       }
