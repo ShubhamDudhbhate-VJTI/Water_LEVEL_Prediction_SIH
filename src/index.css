@@ -6,6 +6,8 @@
 
 @layer base {
   :root {
+    /* Font size from localStorage */
+    font-size: var(--base-font-size, 14px);
     /* Main backgrounds */
     --background: 220 13% 9%;
     --foreground: 220 9% 89%;
@@ -80,4 +82,63 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Compact Mode Styles */
+.compact-mode {
+  --spacing-unit: 0.5rem;
+}
+
+.compact-mode .space-y-6 > * + * {
+  margin-top: 1rem;
+}
+
+.compact-mode .space-y-4 > * + * {
+  margin-top: 0.75rem;
+}
+
+.compact-mode .space-y-3 > * + * {
+  margin-top: 0.5rem;
+}
+
+.compact-mode .space-y-2 > * + * {
+  margin-top: 0.25rem;
+}
+
+.compact-mode .p-4 {
+  padding: 0.75rem;
+}
+
+.compact-mode .p-6 {
+  padding: 1rem;
+}
+
+.compact-mode .py-8 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.compact-mode .py-12 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+/* No Animations */
+.no-animations * {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+.no-animations .animate-pulse {
+  animation: none !important;
+}
+
+.no-animations .animate-bounce {
+  animation: none !important;
+}
+
+.no-animations .animate-spin {
+  animation: none !important;
 }

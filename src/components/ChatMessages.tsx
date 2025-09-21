@@ -93,10 +93,10 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
               <span className="text-2xl">🤖</span>
             </div>
             <h3 className="text-lg font-medium text-foreground mb-2">
-              Welcome to AI Assistant
+              Welcome to WaterAI Assistant
             </h3>
             <p className="text-muted-foreground">
-              Start a conversation by typing a message or uploading a file.
+              Ask about water levels, flood predictions, or farming water management.
             </p>
           </div>
         ) : (

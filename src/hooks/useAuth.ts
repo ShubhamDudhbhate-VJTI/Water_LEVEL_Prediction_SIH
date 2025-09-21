@@ -139,6 +139,12 @@ export const useAuthProvider = (): AuthContextType => {
     setLoading(true);
     try {
       await supabase.auth.signOut();
+      
+      // Clear all localStorage data
+      localStorage.clear();
+      
+      // Redirect to welcome page
+      window.location.href = '/welcome';
     } catch (error) {
       toast({
         title: "Sign out failed",

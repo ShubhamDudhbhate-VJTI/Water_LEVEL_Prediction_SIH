@@ -233,54 +233,43 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   // Handle paste operations for images and files
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const items = Array.from(e.clipboardData.items);
+    const processedFiles: File[] = [];
     
-    // Handle pasted images
+    // Process each item only once
     items.forEach((item) => {
-      if (item.type.startsWith('image/')) {
+      if (item.kind === 'file') {
         const file = item.getAsFile();
         if (file && validateFile(file)) {
-          const fileObj = {
-            id: nanoid(),
-            name: `pasted-image-${Date.now()}.${file.type.split('/')[1]}`,
-            type: 'image',
-            size: formatFileSize(file.size),
-            file: file,
-            preview: URL.createObjectURL(file),
-            status: 'uploading'
-          };
-          setAttachedFiles(prev => [...prev, fileObj]);
-          simulateUpload(fileObj.id);
+          // Check if we already processed this file to avoid duplicates
+          const alreadyProcessed = processedFiles.some(f => 
+            f.name === file.name && f.size === file.size && f.type === file.type
+          );
           
-          toast({
-            title: "Image pasted",
-            description: "Processing pasted image...",
-          });
+          if (!alreadyProcessed) {
+            processedFiles.push(file);
+            
+            const isImage = file.type.startsWith('image/');
+            const fileObj = {
+              id: nanoid(),
+              name: file.name || `pasted-${isImage ? 'image' : 'file'}-${Date.now()}.${file.type.split('/')[1] || 'bin'}`,
+              type: isImage ? 'image' : 'document',
+              size: formatFileSize(file.size),
+              file: file,
+              preview: URL.createObjectURL(file),
+              status: 'uploading' as const
+            };
+            
+            setAttachedFiles(prev => [...prev, fileObj]);
+            simulateUpload(fileObj.id);
+          }
         }
       }
     });
 
-    // Handle pasted files (non-images)
-    const files = Array.from(e.clipboardData.files || []);
-    if (files.length > 0) {
-      files.forEach((file) => {
-        if (validateFile(file)) {
-          const isImage = file.type.startsWith('image/');
-          const fileObj = {
-            id: nanoid(),
-            name: file.name || `pasted-file-${Date.now()}`,
-            type: isImage ? 'image' : 'document',
-            size: formatFileSize(file.size),
-            file,
-            preview: URL.createObjectURL(file),
-            status: 'uploading'
-          };
-          setAttachedFiles(prev => [...prev, fileObj]);
-          simulateUpload(fileObj.id);
-        }
-      });
-
+    // Show toast only if files were processed
+    if (processedFiles.length > 0) {
       toast({
-        title: `${files.length} item(s) pasted`,
+        title: `${processedFiles.length} item(s) pasted`,
         description: "Processing pasted content...",
       });
     }

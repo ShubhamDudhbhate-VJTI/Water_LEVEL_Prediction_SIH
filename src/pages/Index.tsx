@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ChatSidebar } from "@/components/ChatSidebar";
@@ -6,18 +6,45 @@ import { ChatMessages } from "@/components/ChatMessages";
 import { ChatInput } from "@/components/ChatInput";
 import { SettingsModal } from "@/components/SettingsModal";
 import { AuthModal } from "@/components/AuthModal";
-import { Menu } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChatManager } from "@/hooks/useChatManager";
 import { useAuth } from "@/hooks/useAuth";
 import { generateAIResponse } from "@/services/openai";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  console.log('Index component rendering');
   const { user, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentUserName, setCurrentUserName] = useState<string>('');
+  const navigate = useNavigate();
+
+  // Check for user name on component mount
+  useEffect(() => {
+    const savedName = localStorage.getItem('chatboat-username');
+    if (savedName) {
+      setCurrentUserName(savedName);
+    } else {
+      // Redirect to welcome page if no name is set
+      navigate('/welcome');
+    }
+  }, [navigate]);
+
+  // Listen for settings updates
+  useEffect(() => {
+    const handleSettingsUpdate = (event: any) => {
+      if (event.detail?.username) {
+        setCurrentUserName(event.detail.username);
+      }
+    };
+
+    window.addEventListener('settingsUpdated', handleSettingsUpdate);
+    return () => window.removeEventListener('settingsUpdated', handleSettingsUpdate);
+  }, []);
   
   const {
     chats,
@@ -101,15 +128,23 @@ const Index = () => {
             <div className="flex items-center gap-3">
               <SidebarTrigger className="text-foreground hover:bg-muted p-2 rounded-md transition-colors" />
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded bg-gradient-primary flex items-center justify-center">
-                  <span className="text-xs font-bold text-primary-foreground">AI</span>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary via-primary/80 to-primary/60 flex items-center justify-center shadow-lg">
+                  <span className="text-sm font-bold text-white">AI</span>
                 </div>
-                <h1 className="font-semibold text-foreground">AI Assistant</h1>
+                <h1 className="font-bold text-lg text-foreground">WaterAI Assistant</h1>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
-              <span className="text-sm text-muted-foreground">Ready to chat</span>
+            <div className="flex items-center gap-4">
+              {currentUserName && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+                  <User className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Welcome, {currentUserName}!</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+                <span className="text-sm text-muted-foreground">Ready to chat</span>
+              </div>
             </div>
           </header>
 

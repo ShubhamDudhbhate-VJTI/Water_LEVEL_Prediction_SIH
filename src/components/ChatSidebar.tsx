@@ -77,11 +77,11 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-success rounded-full animate-pulse"></div>
             </div>
             {!isCollapsed && (
-              <div>
-                <h1 className="font-bold text-lg bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-                  AI Assistant
+              <div className="flex-1 min-w-0">
+                <h1 className="font-bold text-lg text-foreground truncate">
+                  WaterAI Assistant
                 </h1>
-                <p className="text-xs text-muted-foreground">Powered by AI</p>
+                <p className="text-xs text-muted-foreground">Water Level Analysis</p>
               </div>
             )}
           </div>
@@ -149,17 +149,15 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                                 {chat.preview || "No messages yet"}
                               </div>
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
+                            <div
                               onClick={(e) => {
                                 e.stopPropagation();
                                 onDeleteChat(chat.id);
                               }}
-                              className="opacity-0 group-hover:opacity-100 transition-all duration-200 h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 ml-2"
+                              className="opacity-0 group-hover:opacity-100 transition-all duration-200 h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 ml-2 cursor-pointer flex items-center justify-center rounded hover:bg-destructive/10"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
+                            </div>
                           </>
                         )}
                       </SidebarMenuButton>
