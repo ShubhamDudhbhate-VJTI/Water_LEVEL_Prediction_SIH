@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 
 export interface Message {
@@ -23,24 +23,42 @@ export interface Chat {
 }
 
 export const useChatManager = () => {
-  const [chats, setChats] = useState<Chat[]>([
-    {
-      id: '1',
-      title: 'Welcome Chat',
-      timestamp: 'Just now',
-      preview: 'Hello! I\'m your AI assistant...',
-      messages: [
-        {
-          id: 'welcome-1',
-          content: "Hello! I'm your AI assistant. I'm here to help answer questions, provide information, and have meaningful conversations. What would you like to talk about today?",
-          role: 'assistant',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-      ]
+  const [chats, setChats] = useState<Chat[]>(() => {
+    // Load chats from localStorage on initialization
+    const savedChats = localStorage.getItem('chatboat-chats');
+    if (savedChats) {
+      try {
+        return JSON.parse(savedChats);
+      } catch (error) {
+        console.error('Error parsing saved chats:', error);
+      }
     }
-  ]);
+    
+    // Default welcome chat if no saved chats
+    return [
+      {
+        id: '1',
+        title: 'Welcome Chat',
+        timestamp: 'Just now',
+        preview: 'Hello! I\'m your AI assistant...',
+        messages: [
+          {
+            id: 'welcome-1',
+            content: "Hello! I'm your AI assistant. I'm here to help answer questions, provide information, and have meaningful conversations. What would you like to talk about today?",
+            role: 'assistant',
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ]
+      }
+    ];
+  });
   
   const [activeChat, setActiveChat] = useState<string>('1');
+
+  // Save chats to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('chatboat-chats', JSON.stringify(chats));
+  }, [chats]);
 
   const createNewChat = useCallback(() => {
     const newChatId = nanoid();
@@ -102,6 +120,22 @@ export const useChatManager = () => {
     return chats.find(chat => chat.id === activeChat);
   }, [chats, activeChat]);
 
+  const deleteMessage = useCallback((messageId: string) => {
+    setChats(prev => prev.map(chat => {
+      if (chat.id === activeChat) {
+        const updatedMessages = chat.messages.filter(msg => msg.id !== messageId);
+        return {
+          ...chat,
+          messages: updatedMessages,
+          preview: updatedMessages.length > 0 
+            ? updatedMessages[updatedMessages.length - 1].content.slice(0, 50) + (updatedMessages[updatedMessages.length - 1].content.length > 50 ? '...' : '')
+            : 'Empty conversation'
+        };
+      }
+      return chat;
+    }));
+  }, [activeChat]);
+
   return {
     chats,
     activeChat,
@@ -109,6 +143,7 @@ export const useChatManager = () => {
     createNewChat,
     addMessage,
     deleteChat,
+    deleteMessage,
     getCurrentChat
   };
 };

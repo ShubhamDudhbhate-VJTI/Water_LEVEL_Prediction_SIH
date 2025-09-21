@@ -2,34 +2,30 @@ import React, { useEffect, useRef } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Copy, Download, RefreshCw, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Copy, Download, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface Message {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant';
-  timestamp: string;
-  attachments?: Array<{
-    type: 'image' | 'document' | 'file';
-    name: string;
-    url: string;
-    size?: string;
-  }>;
-}
+import { Message } from "@/hooks/useChatManager";
 
 interface ChatMessagesProps {
   messages: Message[];
+  isGenerating?: boolean;
+  onDeleteMessage?: (messageId: string) => void;
 }
 
-export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
+export const ChatMessages: React.FC<ChatMessagesProps> = ({ 
+  messages, 
+  isGenerating = false, 
+  onDeleteMessage 
+}) => {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages.length, isGenerating]);
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
-  const bottomRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages.length]);
 
   const handleDownload = (url: string, name: string) => {
     const a = document.createElement('a');
@@ -43,7 +39,6 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
 
   const MessageActions = ({ message }: { message: Message }) => {
     if (message.role === 'user') return null;
-    
     return (
       <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-smooth">
         <Button 
@@ -54,61 +49,40 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
         >
           <Copy className="w-3 h-3" />
         </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-7 px-2 text-muted-foreground hover:text-foreground"
-        >
-          <ThumbsUp className="w-3 h-3" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-7 px-2 text-muted-foreground hover:text-foreground"
-        >
-          <ThumbsDown className="w-3 h-3" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-7 px-2 text-muted-foreground hover:text-foreground"
-        >
-          <RefreshCw className="w-3 h-3" />
-        </Button>
+        {onDeleteMessage && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-7 px-2 text-muted-foreground hover:text-destructive"
+            onClick={() => onDeleteMessage(message.id)}
+          >
+            <Trash2 className="w-3 h-3" />
+          </Button>
+        )}
       </div>
     );
   };
 
-  const AttachmentPreview = ({ attachment }: { attachment: Message['attachments'][0] }) => {
-    return (
-      <div className="flex items-center gap-2 p-2 rounded-lg bg-surface border border-border mt-2 max-w-xs">
-        {attachment.type === 'image' ? (
-          <img 
-            src={attachment.url} 
-            alt={attachment.name}
-            className="w-10 h-10 rounded object-cover"
-          />
-        ) : (
-          <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
-            <span className="text-xs font-medium text-primary">
-              {attachment.type === 'document' ? 'DOC' : 'FILE'}
-            </span>
-          </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-foreground truncate">
-            {attachment.name}
-          </p>
-          {attachment.size && (
-            <p className="text-xs text-muted-foreground">{attachment.size}</p>
-          )}
+  const AttachmentPreview = ({ attachment }: { attachment: Message['attachments'][0] }) => (
+    <div className="flex items-center gap-2 p-2 rounded-lg bg-surface border border-border mt-2 max-w-xs">
+      {attachment.type === 'image' ? (
+        <img src={attachment.url} alt={attachment.name} className="w-10 h-10 rounded object-cover" />
+      ) : (
+        <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
+          <span className="text-xs font-medium text-primary">
+            {attachment.type === 'document' ? 'DOC' : 'FILE'}
+          </span>
         </div>
-        <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => handleDownload(attachment.url, attachment.name)}>
-          <Download className="w-3 h-3" />
-        </Button>
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground truncate">{attachment.name}</p>
+        {attachment.size && <p className="text-xs text-muted-foreground">{attachment.size}</p>}
       </div>
-    );
-  };
+      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => handleDownload(attachment.url, attachment.name)}>
+        <Download className="w-3 h-3" />
+      </Button>
+    </div>
+  );
 
   return (
     <ScrollArea className="flex-1 px-4 lg:px-6">
@@ -146,7 +120,6 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                   {message.role === 'user' ? 'U' : 'AI'}
                 </AvatarFallback>
               </Avatar>
-              
               <div className={cn(
                 "flex-1 max-w-3xl",
                 message.role === 'user' ? "flex flex-col items-end" : ""
@@ -160,7 +133,6 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">
                     {message.content}
                   </p>
-                  
                   {message.attachments && message.attachments.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       {message.attachments.map((attachment, index) => (
@@ -169,7 +141,6 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                     </div>
                   )}
                 </div>
-                
                 <div className={cn(
                   "flex items-center gap-2 mt-1 px-2",
                   message.role === 'user' ? "flex-row-reverse" : "flex-row"
@@ -183,6 +154,30 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
             </div>
           ))
         )}
+        
+        {/* Loading indicator */}
+        {isGenerating && (
+          <div className="flex gap-4">
+            <Avatar className="h-8 w-8 flex-shrink-0">
+              <AvatarFallback className="bg-accent text-accent-foreground">
+                AI
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 max-w-3xl mr-12">
+              <div className="rounded-2xl px-4 py-3 bg-message-assistant text-foreground">
+                <div className="flex items-center gap-2">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  </div>
+                  <span className="text-sm text-muted-foreground">AI is thinking...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div ref={bottomRef} />
       </div>
     </ScrollArea>

@@ -1,4 +1,49 @@
-# Welcome to your Lovable project
+# AI Chatboat - Intelligent Chat Application
+
+A modern, responsive chat application with AI integration powered by OpenAI.
+
+## Features
+
+- 🤖 **Real AI Responses**: Powered by OpenAI GPT models
+- 💬 **Smart Conversations**: Context-aware chat with conversation history
+- 📁 **File Uploads**: Support for images, documents, and other files
+- 🎨 **Modern UI**: Beautiful interface built with shadcn/ui and Tailwind CSS
+- 🔐 **Authentication**: User authentication with Supabase
+- 📱 **Responsive**: Works on desktop, tablet, and mobile devices
+
+## Setup Instructions
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Setup FREE Local AI (Recommended)
+For completely FREE AI responses, use Ollama:
+
+1. **Download Ollama**: Visit [ollama.ai](https://ollama.ai) and download
+2. **Install a model**: Run `ollama pull llama3:8b` in terminal
+3. **Start Ollama**: Run `ollama serve` in terminal
+4. **That's it!** No API keys or credits needed!
+
+**Benefits:**
+- ✅ 100% FREE - No costs ever
+- ✅ Runs on your computer
+- ✅ No internet required
+- ✅ Privacy-friendly
+- ✅ No API keys needed
+
+### Alternative: OpenAI API (Paid)
+If you prefer OpenAI, create a `.env` file:
+```env
+VITE_OPENAI_API_KEY=your_actual_api_key_here
+VITE_OPENAI_MODEL=gpt-3.5-turbo
+```
+
+### 3. Start Development Server
+```bash
+npm run dev
+```
 
 ## Project info
 

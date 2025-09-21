@@ -8,7 +8,7 @@ import {
   Send, 
   Paperclip, 
   Mic, 
-  MicOff,
+  MicOff, 
   X,
   Image as ImageIcon,
   FileText,
@@ -20,12 +20,21 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Add Speech Recognition types
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
 interface ChatInputProps {
   onSendMessage: (message: string, files?: any[]) => void;
   disabled?: boolean;
+  isGenerating?: boolean;
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = false, isGenerating = false }) => {
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [showFileUpload, setShowFileUpload] = useState(false);
@@ -33,6 +42,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{[key: string]: number}>({});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -82,13 +92,69 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
     textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
   };
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
+  const toggleRecording = async () => {
     if (!isRecording) {
-      toast({
-        title: "Voice recording",
-        description: "Voice recording feature coming soon!",
-      });
+      try {
+        // Request microphone permission
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        // Create Speech Recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          toast({
+            title: "Speech recognition not supported",
+            description: "Your browser doesn't support speech recognition.",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+          setIsRecording(true);
+          toast({
+            title: "🎤 Listening...",
+            description: "Speak now, I'm listening to you!",
+          });
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          setMessage(transcript);
+          toast({
+            title: "✅ Voice captured",
+            description: "Your speech has been converted to text!",
+          });
+        };
+
+        recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          toast({
+            title: "Voice recognition error",
+            description: `Error: ${event.error}`,
+            variant: "destructive"
+          });
+        };
+
+        recognition.onend = () => {
+          setIsRecording(false);
+        };
+
+        recognition.start();
+      } catch (error) {
+        console.error('Microphone access error:', error);
+        toast({
+          title: "Microphone access denied",
+          description: "Please allow microphone access to use voice input.",
+          variant: "destructive"
+        });
+      }
+    } else {
+      setIsRecording(false);
     }
   };
 
@@ -273,6 +339,39 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
     });
   }, []);
 
+  // Handle direct file input
+  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    
+    files.forEach((file) => {
+      if (validateFile(file)) {
+        const fileObj = {
+          id: nanoid(),
+          name: file.name,
+          type: file.type.startsWith('image/') ? 'image' : 
+                file.type.startsWith('video/') ? 'video' : 
+                file.type.startsWith('audio/') ? 'audio' : 'document',
+          size: formatFileSize(file.size),
+          file: file,
+          preview: URL.createObjectURL(file),
+          status: 'uploading'
+        };
+        setAttachedFiles(prev => [...prev, fileObj]);
+        simulateUpload(fileObj.id);
+      }
+    });
+    
+    // Reset input
+    e.target.value = '';
+    
+    if (files.length > 0) {
+      toast({
+        title: `${files.length} file(s) selected`,
+        description: "Processing selected files...",
+      });
+    }
+  }, [validateFile, simulateUpload, formatFileSize, toast]);
+
   return (
     <div className="border-t border-border bg-background/95 backdrop-blur-sm">
       <div className="max-w-4xl mx-auto p-4 lg:p-6">
@@ -394,13 +493,27 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
 
         {/* Main Input Area */}
         <form onSubmit={handleSubmit} className="flex items-end gap-3">
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileInput}
+            multiple
+            accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+            style={{ display: 'none' }}
+          />
+          
           {/* Input Actions */}
           <div className="flex items-center gap-1">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => setShowFileUpload(!showFileUpload)}
+              onClick={() => {
+                setShowFileUpload(!showFileUpload);
+                // Also trigger file input
+                fileInputRef.current?.click();
+              }}
               className={cn(
                 "h-9 w-9 p-0 transition-colors duration-smooth",
                 showFileUpload ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"
@@ -448,6 +561,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
               placeholder={
                 disabled
                   ? "Please sign in to start chatting..."
+                  : isGenerating
+                  ? "🤖 AI is thinking... Please wait for response"
                   : isRecording 
                   ? "🎤 Recording... Click the mic to stop" 
                   : isDragging

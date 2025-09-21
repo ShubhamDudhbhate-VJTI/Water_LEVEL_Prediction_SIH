@@ -10,12 +10,14 @@ import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChatManager } from "@/hooks/useChatManager";
 import { useAuth } from "@/hooks/useAuth";
+import { generateAIResponse } from "@/services/openai";
 
 const Index = () => {
   const { user, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   
   const {
     chats,
@@ -24,11 +26,15 @@ const Index = () => {
     createNewChat,
     addMessage,
     deleteChat,
+    deleteMessage,
     getCurrentChat
   } = useChatManager();
 
-  const handleSendMessage = (content: string, files?: any[]) => {
-    if (!activeChat) return;
+  const handleSendMessage = async (content: string, files?: any[]) => {
+    if (!activeChat || isGenerating) return;
+
+    // Set loading state
+    setIsGenerating(true);
 
     // Add user message
     addMessage(activeChat, {
@@ -43,14 +49,35 @@ const Index = () => {
       }))
     });
 
-    // Simulate AI response
-    setTimeout(() => {
+    // Get conversation history for context
+    const currentChat = getCurrentChat();
+    const conversationHistory = currentChat?.messages.slice(-10).map(msg => ({
+      role: msg.role as 'user' | 'assistant',
+      content: msg.content
+    })) || [];
+
+    try {
+      // Generate AI response using OpenAI API
+      const aiResponse = await generateAIResponse(content, conversationHistory);
+      
       addMessage(activeChat, {
-        content: "Thank you for your message! I'm processing your request and will provide a helpful response. This is a demo of the AI chat interface with support for file uploads, settings, and user authentication.",
+        content: aiResponse,
         role: 'assistant',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });
-    }, 1000);
+    } catch (error) {
+      console.error('Error generating AI response:', error);
+      
+      // Fallback response
+      addMessage(activeChat, {
+        content: `Sorry, I encountered an error while processing your request. Please try again or check your API configuration.\n\nError: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        role: 'assistant',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+    } finally {
+      // Clear loading state
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -88,8 +115,8 @@ const Index = () => {
 
           {/* Chat Area */}
           <div className="flex-1 flex flex-col overflow-hidden">
-            <ChatMessages messages={getCurrentChat()?.messages || []} />
-            <ChatInput onSendMessage={handleSendMessage} disabled={!user} />
+            <ChatMessages messages={getCurrentChat()?.messages || []} isGenerating={isGenerating} onDeleteMessage={deleteMessage} />
+            <ChatInput onSendMessage={handleSendMessage} disabled={!user || isGenerating} isGenerating={isGenerating} />
           </div>
         </main>
 
