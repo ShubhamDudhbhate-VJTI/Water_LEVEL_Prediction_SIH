@@ -345,11 +345,11 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
         {!isCollapsed && (
           <div className="mt-6 flex flex-col gap-2">
             <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/analytics">Analytics</Link>
-            <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/documents">Documents</Link>
+            {/* <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/documents">Documents</Link> */}
             <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/map">Map</Link>
-            <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/api-config">API Config</Link>
-            <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/settings">Settings</Link>
-            <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/upload">Upload Data</Link>
+            {/* <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/api-config">API Config</Link>
+            <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/SettingsModel">Settings</Link>
+            <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/upload">Upload Data</Link> */}
             <Link className="text-sm px-3 py-2 rounded hover:bg-muted/40 transition" to="/welcome">Welcome</Link>
           </div>
         )}
