@@ -1,3 +1,4 @@
+
 // // Free Local AI Service using Ollama
 // const OLLAMA_BASE_URL = 'http://localhost:11434';
 
@@ -6,50 +7,22 @@
 //   content: string;
 // }
 
+// // Non-streaming response (optional)
 // export const generateAIResponse = async (
 //   userMessage: string,
 //   conversationHistory: ChatMessage[] = []
 // ): Promise<string> => {
 //   try {
 //     console.log('🚀 generateAIResponse called with:', userMessage);
-//     console.log('🤖 Using FREE Local AI (Ollama)');
-//     console.log('🔗 Connecting to:', OLLAMA_BASE_URL);
     
 //     // Check if Ollama is running
-//     try {
-//       console.log('🔍 Checking Ollama connection...');
-//       const healthCheck = await fetch(`${OLLAMA_BASE_URL}/api/tags`);
-//       console.log('✅ Ollama connection status:', healthCheck.status);
-//       if (!healthCheck.ok) {
-//         throw new Error('Ollama not running');
-//       }
-//     } catch (error) {
-//       console.log('❌ Ollama connection failed:', error);
-//       return `🆓 **FREE AI Setup Required**
+//     const healthCheck = await fetch(`${OLLAMA_BASE_URL}/api/tags`);
+//     if (!healthCheck.ok) throw new Error('Ollama not running');
 
-// To use FREE local AI responses:
-
-// 1. **Download Ollama**: Visit [ollama.ai](https://ollama.ai) and download
-// 2. **Install a model**: Run \`ollama pull llama3:8b\` in terminal
-// 3. **Start Ollama**: Run \`ollama serve\` in terminal
-// 4. **Refresh this page** and try again!
-
-// **Benefits:**
-// ✅ 100% FREE - No API keys needed
-// ✅ Runs on your computer
-// ✅ No internet required
-// ✅ Privacy-friendly
-
-// **Your message:** ${userMessage}
-
-// *This is a free alternative to OpenAI!*`;
-//     }
-
-//     // Prepare messages for Ollama
 //     const messages = [
 //       {
 //         role: 'system',
-//         content: 'You are a helpful, friendly AI assistant. Provide clear, concise, and helpful responses. Be conversational and engaging.'
+//         content: 'You are a helpful, friendly AI assistant. Provide detailed, thorough, and engaging responses. Explain clearly and give examples when needed.'
 //       },
 //       ...conversationHistory,
 //       {
@@ -58,56 +31,32 @@
 //       }
 //     ];
 
-//     console.log('📤 Sending request to Ollama with model: llama3:8b');
 //     const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
 //       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
+//       headers: { 'Content-Type': 'application/json' },
 //       body: JSON.stringify({
-//         model: 'llama3:8b',
+//         model: 'gpt-oss:120b-cloud',
 //         messages: messages,
 //         stream: false,
 //         options: {
 //           temperature: 0.7,
-//           num_predict: 200,  // Limit response length for faster responses
+//           num_predict: 10000 // practically unlimited output
 //         }
 //       })
 //     });
-    
-//     console.log('📥 Ollama response status:', response.status);
 
-//     if (!response.ok) {
-//       throw new Error(`Ollama API error: ${response.status}`);
-//     }
+//     if (!response.ok) throw new Error(`Ollama API error: ${response.status}`);
 
 //     const data = await response.json();
-//     console.log('📄 Ollama response data:', data);
-//     console.log('💬 Extracted content:', data.message?.content);
-//     return data.message?.content || 'Sorry, I couldn\'t generate a response. Please try again.';
+//     return data.message?.content || 'Sorry, I could not generate a response.';
     
 //   } catch (error) {
 //     console.error('Ollama API Error:', error);
-    
-//     // Fallback response with helpful error information
-//     return `🚨 **Local AI Error**
-
-// There was an issue connecting to Ollama:
-
-// **Error:** ${error instanceof Error ? error.message : 'Unknown error'}
-
-// **Quick Setup:**
-// 1. Download from [ollama.ai](https://ollama.ai)
-// 2. Run: \`ollama pull llama3:8b\`
-// 3. Run: \`ollama serve\`
-// 4. Refresh and try again!
-
-// **Your message:** ${userMessage}
-
-// *This is a FREE local AI solution!*`;
+//     return `Error generating response: ${error instanceof Error ? error.message : 'Unknown error'}`;
 //   }
 // };
 
+// // Streaming response (recommended for long outputs)
 // export const generateStreamingResponse = async (
 //   userMessage: string,
 //   conversationHistory: ChatMessage[] = [],
@@ -115,54 +64,36 @@
 //   onComplete: () => void
 // ): Promise<void> => {
 //   try {
-//     // Check if Ollama is running
-//     try {
-//       const healthCheck = await fetch(`${OLLAMA_BASE_URL}/api/tags`);
-//       if (!healthCheck.ok) {
-//         throw new Error('Ollama not running');
-//       }
-//     } catch (error) {
-//       onChunk('🆓 Please install Ollama for free local AI responses. Visit ollama.ai');
-//       onComplete();
-//       return;
-//     }
+//     const healthCheck = await fetch(`${OLLAMA_BASE_URL}/api/tags`);
+//     if (!healthCheck.ok) throw new Error('Ollama not running');
 
 //     const messages = [
 //       {
 //         role: 'system',
-//         content: 'You are a helpful, friendly AI assistant. Provide clear, concise, and helpful responses. Be conversational and engaging.'
+//         content: 'You are a helpful, friendly AI assistant. Provide detailed, thorough, and engaging responses. Explain clearly and give examples when needed.'
 //       },
 //       ...conversationHistory,
-//       {
-//         role: 'user',
-//         content: userMessage
-//       }
+//       { role: 'user', content: userMessage }
 //     ];
 
 //     const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
 //       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
+//       headers: { 'Content-Type': 'application/json' },
 //       body: JSON.stringify({
-//         model: 'llama3:8b',
+//         model: 'gpt-oss:120b-cloud',
 //         messages: messages,
 //         stream: true,
 //         options: {
 //           temperature: 0.7,
-//           num_predict: 200,  // Limit response length for faster responses
+//           num_predict: 10000 // practically unlimited output
 //         }
 //       })
 //     });
 
-//     if (!response.ok) {
-//       throw new Error(`Ollama API error: ${response.status}`);
-//     }
+//     if (!response.ok) throw new Error(`Ollama API error: ${response.status}`);
 
 //     const reader = response.body?.getReader();
-//     if (!reader) {
-//       throw new Error('No response body');
-//     }
+//     if (!reader) throw new Error('No response body');
 
 //     const decoder = new TextDecoder();
 //     let buffer = '';
@@ -179,12 +110,8 @@
 //         if (line.trim()) {
 //           try {
 //             const data = JSON.parse(line);
-//             if (data.message?.content) {
-//               onChunk(data.message.content);
-//             }
-//           } catch (e) {
-//             // Skip invalid JSON lines
-//           }
+//             if (data.message?.content) onChunk(data.message.content);
+//           } catch (e) { /* ignore invalid JSON */ }
 //         }
 //       }
 //     }
@@ -197,17 +124,6 @@
 //   }
 // };
 
-
-
-
-
-
-
-
-
-
-
-// Free Local AI Service using Ollama
 const OLLAMA_BASE_URL = 'http://localhost:11434';
 
 export interface ChatMessage {
@@ -215,14 +131,37 @@ export interface ChatMessage {
   content: string;
 }
 
-// Non-streaming response (optional)
+// RAG API call
+export const getRagAnswer = async (query: string): Promise<string> => {
+  try {
+    const response = await fetch("http://localhost:5000/rag", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query })
+    });
+    if (!response.ok) throw new Error("RAG API error");
+    const data = await response.json();
+    return data.answer || "No RAG answer found.";
+  } catch (error) {
+    console.error("RAG API Error:", error);
+    return `Error from RAG: ${error instanceof Error ? error.message : "Unknown error"}`;
+  }
+};
+
+// Non-streaming response (RAG first, fallback to Ollama)
 export const generateAIResponse = async (
   userMessage: string,
   conversationHistory: ChatMessage[] = []
 ): Promise<string> => {
   try {
     console.log('🚀 generateAIResponse called with:', userMessage);
-    
+
+    // Try RAG first
+    const ragAnswer = await getRagAnswer(userMessage);
+    if (ragAnswer && !ragAnswer.startsWith("Error")) {
+      return ragAnswer;
+    }
+
     // Check if Ollama is running
     const healthCheck = await fetch(`${OLLAMA_BASE_URL}/api/tags`);
     if (!healthCheck.ok) throw new Error('Ollama not running');
@@ -248,7 +187,7 @@ export const generateAIResponse = async (
         stream: false,
         options: {
           temperature: 0.7,
-          num_predict: 10000 // practically unlimited output
+          num_predict: 10000
         }
       })
     });
@@ -257,14 +196,14 @@ export const generateAIResponse = async (
 
     const data = await response.json();
     return data.message?.content || 'Sorry, I could not generate a response.';
-    
+
   } catch (error) {
     console.error('Ollama API Error:', error);
     return `Error generating response: ${error instanceof Error ? error.message : 'Unknown error'}`;
   }
 };
 
-// Streaming response (recommended for long outputs)
+// Streaming response (Ollama only)
 export const generateStreamingResponse = async (
   userMessage: string,
   conversationHistory: ChatMessage[] = [],
@@ -293,7 +232,7 @@ export const generateStreamingResponse = async (
         stream: true,
         options: {
           temperature: 0.7,
-          num_predict: 10000 // practically unlimited output
+          num_predict: 10000
         }
       })
     });
@@ -331,4 +270,3 @@ export const generateStreamingResponse = async (
     onComplete();
   }
 };
-
