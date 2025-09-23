@@ -45,6 +45,36 @@ VITE_OPENAI_MODEL=gpt-3.5-turbo
 npm run dev
 ```
 
+### 4. Start the RAG Backend
+In a separate terminal:
+```bash
+# Create and activate venv (Windows PowerShell shown)
+python -m venv .venv
+.venv\\Scripts\\Activate.ps1
+
+# Install Python deps
+pip install -r requirements.txt
+
+# Start Node Express API for RAG
+node server.js
+```
+
+### 5. Run Ollama locally (required for answers)
+- Install Ollama from `https://ollama.com`
+- Pull the model used here:
+```bash
+ollama pull gpt-oss:120b-cloud
+```
+
+### 6. Use RAG in the app
+- Click the paperclip to upload PDF files (they are ingested into ChromaDB)
+- Ask a question; the bot answers using PDF context and shows Sources
+
+Troubleshooting
+- If you see "Error from RAG", ensure `http://localhost:5000` is running
+- Ensure Ollama runs at `http://localhost:11434`
+- Delete the `chroma/` folder to re-ingest from scratch
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/bdc5893d-38cb-4851-93c3-dd7793686424

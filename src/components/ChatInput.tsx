@@ -346,7 +346,28 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled = 
           status: 'uploading'
         };
         setAttachedFiles(prev => [...prev, fileObj]);
-        simulateUpload(fileObj.id);
+        // Upload directly using the FileUpload logic
+        const formData = new FormData();
+        formData.append('files', file);
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://localhost:5000/upload', true);
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const progress = Math.floor((event.loaded / event.total) * 100);
+            setUploadProgress(prev => ({ ...prev, [fileObj.id]: progress }));
+          }
+        };
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            setUploadProgress(prev => ({ ...prev, [fileObj.id]: 100 }));
+          } else {
+            setAttachedFiles(prev => prev.map(f => f.id === fileObj.id ? { ...f, status: 'error' as const } : f));
+          }
+        };
+        xhr.onerror = () => {
+          setAttachedFiles(prev => prev.map(f => f.id === fileObj.id ? { ...f, status: 'error' as const } : f));
+        };
+        xhr.send(formData);
       }
     });
     

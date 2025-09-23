@@ -57,26 +57,33 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }, []);
 
-  const simulateUpload = useCallback((fileId: string) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 20;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
-        setUploadedFiles(prev => prev.map(f => 
-          f.id === fileId 
-            ? { ...f, progress: 100, status: 'completed' as const }
-            : f
-        ));
-      } else {
-        setUploadedFiles(prev => prev.map(f => 
-          f.id === fileId 
-            ? { ...f, progress: Math.floor(progress) }
-            : f
-        ));
+  const uploadToServer = useCallback(async (fileId: string, file: File) => {
+    const formData = new FormData();
+    formData.append('files', file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://localhost:5000/upload', true);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const progress = Math.floor((event.loaded / event.total) * 100);
+        setUploadedFiles(prev => prev.map(f => f.id === fileId ? { ...f, progress } : f));
       }
-    }, 200);
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        setUploadedFiles(prev => prev.map(f => f.id === fileId ? { ...f, progress: 100, status: 'completed' as const } : f));
+      } else {
+        setUploadedFiles(prev => prev.map(f => f.id === fileId ? { ...f, status: 'error' as const } : f));
+      }
+    };
+
+    xhr.onerror = () => {
+      setUploadedFiles(prev => prev.map(f => f.id === fileId ? { ...f, status: 'error' as const } : f));
+    };
+
+    xhr.send(formData);
   }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -103,14 +110,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         reader.readAsDataURL(file);
       }
 
-      // Start upload simulation
-      setTimeout(() => simulateUpload(id), 100);
+      // Upload to backend
+      setTimeout(() => uploadToServer(id, file), 50);
       
       return uploadedFile;
     });
 
     setUploadedFiles(prev => [...prev, ...newFiles]);
-  }, [formatFileSize, getFileType, simulateUpload]);
+  }, [formatFileSize, getFileType, uploadToServer]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -119,6 +126,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     accept: {
       'image/*': [],
       'application/pdf': [],
+      'text/csv': [],
       'application/msword': [],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [],
       'text/*': [],
