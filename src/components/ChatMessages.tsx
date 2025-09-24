@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Copy, Download, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Message } from "@/hooks/useChatManager";
+import { useChatManager, Message } from "@/hooks/useChatManager";
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -18,6 +18,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
   onDeleteMessage 
 }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { activeChat, sendMessage } = useChatManager();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -35,6 +36,12 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  };
+
+  const handleSend = (message: string) => {
+    if (activeChat) {
+      sendMessage(activeChat, message);
+    }
   };
 
   const MessageActions = ({ message }: { message: Message }) => {

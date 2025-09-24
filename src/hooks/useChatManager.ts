@@ -136,6 +136,78 @@ export const useChatManager = () => {
     }));
   }, [activeChat]);
 
+  const fetchAnswerFromBackend = useCallback(async (query: string) => {
+    try {
+      const response = await fetch("http://localhost:5000/rag", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.answer || "I'm sorry, I couldn't find an answer.";
+    } catch (error) {
+      console.error("Failed to fetch answer from backend:", error);
+      return "An error occurred while fetching the answer.";
+    }
+  }, []);
+
+  const sendMessage = useCallback(
+    async (chatId: string, content: string) => {
+      const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const userMessage: Message = {
+        id: nanoid(),
+        content,
+        role: "user",
+        timestamp,
+      };
+
+      setChats((prevChats) => {
+        const updatedChats = prevChats.map((chat) => {
+          if (chat.id === chatId) {
+            return {
+              ...chat,
+              messages: [...chat.messages, userMessage],
+              preview: content,
+              timestamp: "Just now",
+            };
+          }
+          return chat;
+        });
+        return updatedChats;
+      });
+
+      const assistantResponse = await fetchAnswerFromBackend(content);
+
+      const assistantMessage: Message = {
+        id: nanoid(),
+        content: assistantResponse,
+        role: "assistant",
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+
+      setChats((prevChats) => {
+        const updatedChats = prevChats.map((chat) => {
+          if (chat.id === chatId) {
+            return {
+              ...chat,
+              messages: [...chat.messages, assistantMessage],
+              preview: assistantResponse,
+              timestamp: "Just now",
+            };
+          }
+          return chat;
+        });
+        return updatedChats;
+      });
+    },
+    [fetchAnswerFromBackend]
+  );
+
   return {
     chats,
     activeChat,
@@ -144,6 +216,7 @@ export const useChatManager = () => {
     addMessage,
     deleteChat,
     deleteMessage,
-    getCurrentChat
+    getCurrentChat,
+    sendMessage
   };
 };

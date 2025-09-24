@@ -3,3 +3,7 @@ pdfplumber==0.11.4
 sentence-transformers==3.0.1
 chromadb==0.5.11
 ollama==0.3.3
+
+# Added for CSV, JSON, and TXT file handling
+pandas==2.0.3
+numpy==1.25.2

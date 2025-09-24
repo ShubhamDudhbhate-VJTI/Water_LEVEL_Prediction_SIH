@@ -247,6 +247,28 @@ export type RagResult = {
   found?: boolean 
 };
 
+// export const getRagAnswer = async (query: string): Promise<RagResult> => {
+//   try {
+//     const response = await fetch("http://localhost:5000/rag", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ query }),
+//     });
+//     if (!response.ok) throw new Error(`RAG API error: ${response.status}`);
+//     const data = await response.json();
+//     return {
+//       answer: data.answer || "",
+//       sources: data.sources || [],
+//       context: data.context || "",
+//       found: typeof data.found === 'boolean' ? data.found : (Array.isArray(data.sources) && data.sources.length > 0),
+//     };
+//   } catch (error) {
+//     console.error("RAG API Error:", error);
+//     return { answer: `Error from RAG: ${error instanceof Error ? error.message : "Unknown error"}` };
+//   }
+// };
+
+
 export const getRagAnswer = async (query: string): Promise<RagResult> => {
   try {
     const response = await fetch("http://localhost:5000/rag", {
@@ -257,14 +279,14 @@ export const getRagAnswer = async (query: string): Promise<RagResult> => {
     if (!response.ok) throw new Error(`RAG API error: ${response.status}`);
     const data = await response.json();
     return {
-      answer: data.answer || "",
+      answer: data.answer || "No answer found.",
       sources: data.sources || [],
       context: data.context || "",
-      found: typeof data.found === 'boolean' ? data.found : (Array.isArray(data.sources) && data.sources.length > 0),
+      found: data.found || false,
     };
   } catch (error) {
     console.error("RAG API Error:", error);
-    return { answer: `Error from RAG: ${error instanceof Error ? error.message : "Unknown error"}` };
+    return { answer: `Error: ${error.message}` };
   }
 };
 
