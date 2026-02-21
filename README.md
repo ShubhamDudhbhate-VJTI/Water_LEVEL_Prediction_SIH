@@ -26,34 +26,34 @@ This innovative platform combines **real-time water level monitoring**, **predic
 ## 🎯 Features
 
 ### 📊 Real-Time Monitoring
-- ✅ Live water level tracking with instant updates
-- ✅ Historical data analysis and trend visualization
-- ✅ Multi-location monitoring dashboard
-- ✅ Alert system for critical water levels
+- ✅ Live water level tracking & updates
+- ✅ Multi-location dashboard
+- ✅ Water level indicators with status tracking
+- ✅ Historical data viewing
 
 ### 🤖 AI-Powered Intelligence
 - 🧠 RAG (Retrieval-Augmented Generation) chatbot for intelligent Q&A
 - 🔍 OCR capabilities using Tesseract.js for document processing
-- 📈 Predictive analytics using OpenAI models
 - 💬 Natural language conversation support
+- 📄 Multi-format document upload (PDF, Images, Documents)
 
-### 🗺️ Geospatial Features
-- 📍 Interactive maps with Leaflet & Mapbox integration
-- 🎯 Location-based water level tracking
-- 🌐 Real-time geographic data visualization
-- 📌 Marker-based location management
-
-### 📈 Analytics & Visualization
-- 📊 Advanced charting with Recharts
-- 📉 Statistical analysis and reporting
-- 🎨 Interactive dashboard components
-- 📋 Data export capabilities
+### 📂 File Management
+- 📁 Document upload & processing
+- 🖼️ Image file support with preview
+- 📊 File type detection & validation
+- 📈 Upload progress tracking
 
 ### 🔐 Security & Authentication
 - 🔒 Secure authentication with Supabase
 - 👤 User profile management
 - 🛡️ Role-based access control
-- 🔑 Token-based session management
+- 🔑 JWT-based session management
+
+### 🎨 User Interface
+- 🌈 Modern, responsive design with Tailwind CSS
+- 🎭 Interactive components with Shadcn/UI
+- 📱 Mobile-friendly interface
+- 🌓 Dark/Light theme support
 
 ---
 
@@ -77,16 +77,15 @@ This innovative platform combines **real-time water level monitoring**, **predic
 |---------|-------|---------|
 | **Shadcn/UI** | ![Shadcn](https://img.shields.io/badge/shadcn%2Fui-Latest-000000?style=flat-square) | Component System |
 | **Radix UI** | ![Radix](https://img.shields.io/badge/Radix%20UI-Latest-161618?style=flat-square) | Headless Components |
-| **Framer Motion** | ![Framer](https://img.shields.io/badge/Framer%20Motion-12.23-0055FF?style=flat-square&logo=framer) | Animations |
-| **Recharts** | ![Recharts](https://img.shields.io/badge/Recharts-2.15-8884D8?style=flat-square) | Charts & Graphs |
 | **Lucide Icons** | ![Lucide](https://img.shields.io/badge/Lucide%20Icons-Latest-F7931E?style=flat-square) | Icon Library |
+| **Sonner** | ![Sonner](https://img.shields.io/badge/Sonner-1.7-2D2D2D?style=flat-square) | Toast Notifications |
+| **Next-themes** | ![Next-themes](https://img.shields.io/badge/Next--themes-0.4-000000?style=flat-square) | Theme Management |
 
 ### **Geospatial & Mapping**
 
 | Tech | Badge | Purpose |
 |------|-------|---------|
 | **Leaflet** | ![Leaflet](https://img.shields.io/badge/Leaflet-1.9-199900?style=flat-square&logo=leafletjs) | Map Library |
-| **Mapbox GL** | ![Mapbox](https://img.shields.io/badge/Mapbox%20GL-3.15-000000?style=flat-square&logo=mapbox) | Advanced Mapping |
 | **React Leaflet** | ![React Leaflet](https://img.shields.io/badge/React%20Leaflet-4.2-199900?style=flat-square) | React Integration |
 
 ### **Backend Technologies**
@@ -105,8 +104,8 @@ This innovative platform combines **real-time water level monitoring**, **predic
 | **OpenAI** | ![OpenAI](https://img.shields.io/badge/OpenAI-API-000000?style=flat-square&logo=openai) | LLM & Embeddings |
 | **Chroma** | ![Chroma](https://img.shields.io/badge/Chroma-Vector%20DB-FF6B6B?style=flat-square) | Vector Storage |
 | **Tesseract.js** | ![Tesseract](https://img.shields.io/badge/Tesseract.js-6.0-3ECF8E?style=flat-square) | OCR |
-| **Mammoth** | ![Mammoth](https://img.shields.io/badge/Mammoth-1.11-4285F4?style=flat-square) | Document Parsing |
-
+| **Mammoth** | ![Mammoth](https://img.shields.io/badge/Mammoth-1.11-4285F4?style=flat-square) | Document ParsinDocument Processing |
+| **React Dropzone** | ![Dropzone](https://img.shields.io/badge/React%20Dropzone-14.3-00ADEF?style=flat-square) | File Upload Handl
 ### **Form & State Management**
 
 | Tech | Badge | Purpose |
@@ -120,10 +119,10 @@ This innovative platform combines **real-time water level monitoring**, **predic
 
 | Tech | Badge | Purpose |
 |------|-------|---------|
-| **Multer** | ![Multer](https://img.shields.io/badge/Multer-2.0-000000?style=flat-square) | File Upload |
+| **Multer** | ![Multer](https://img.shields.io/badge/Multer-2.0-000000?style=flat-square) | Backend File Upload |
 | **Date-fns** | ![Date-fns](https://img.shields.io/badge/Date--fns-3.6-770C53?style=flat-square) | Date Utilities |
-| **Sonner** | ![Sonner](https://img.shields.io/badge/Sonner-1.7-2D2D2D?style=flat-square) | Toast Notifications |
-| **Winston** | ![Winston](https://img.shields.io/badge/Winston-3.17-00AA00?style=flat-square) | Logging |
+| **Winston** | ![Winston](https://img.shields.io/badge/Winston-3.17-00AA00?style=flat-square) | Logging Framework |
+| **Nanoid** | ![Nanoid](https://img.shields.io/badge/Nanoid-5.1-000000?style=flat-square) | ID Generation |
 
 </div>
 
@@ -275,22 +274,22 @@ python rag_script.py    # Process documents with RAG
 ## 🔑 Key Features Deep Dive
 
 ### 🤖 AI Chat System
-- **RAG-Powered Responses**: Retrieval-Augmented Generation for contextual answers
-- **Document Processing**: OCR and document parsing capabilities
-- **Multi-turn Conversations**: Maintain context across multiple messages
-- **Real-time Processing**: Instant response generation
+- **RAG-Powered Responses**: Retrieval-Augmented Generation for contextual, knowledge-based answers
+- **Document Processing**: OCR and multi-format document parsing with Tesseract.js
+- **Multi-turn Conversations**: Full conversation history with context preservation
+- **Real-time Processing**: Instant response generation with streaming support
 
-### 📊 Water Level Analytics
-- **Real-time Metrics**: Live water level tracking
-- **Predictive Analysis**: ML-based forecasting
-- **Historical Trends**: Long-term data analysis
-- **Anomaly Detection**: Alert system for critical levels
+### 📊 Water Level Dashboard
+- **Real-time Metrics**: Live water level data visualization
+- **Status Indicators**: Color-coded alerts (Normal, High, Low)
+- **Multi-location Tracking**: Monitor multiple water stations simultaneously
+- **Data Display**: Progress bars and status badges for quick insights
 
-### 🗺️ Geospatial Intelligence
-- **Interactive Mapping**: Leaflet & Mapbox integration
-- **Location-based Services**: Proximity-based features
-- **GIS Data Visualization**: Advanced spatial analytics
-- **Multi-layer Mapping**: Overlay different datasets
+### 📄 Document Management
+- **Multi-format Upload**: Support for PDF, Images, Word documents
+- **File Validation**: Automatic file type checking and size validation
+- **Progress Tracking**: Real-time upload progress with visual feedback
+- **OCR Processing**: Automated text extraction from images & documents
 
 ---
 
@@ -348,10 +347,10 @@ DELETE /api/uploads/:id         # Delete file
 ## 🎨 Styling & Animations
 
 The project uses:
-- ✨ **Tailwind CSS** for utility-first styling
-- 🎬 **Framer Motion** for smooth animations
-- 🎭 **Tailwind Animations** for CSS transitions
+- 🎨 **Tailwind CSS** for utility-first styling
+- 🎭 **Tailwind Animations** for smooth CSS transitions
 - 🌈 **Custom CSS** for unique effects
+- 🌓 **Next-themes** for dark/light mode support
 
 ### Animation Examples
 ```css
@@ -431,11 +430,6 @@ npm run dev -- --port 8081
 
 ---
 
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
 
 ## 🙏 Acknowledgments
 
@@ -475,12 +469,13 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 | Metric | Value |
 |--------|-------|
-| **Total Dependencies** | 50+ |
-| **Lines of Code** | 5000+ |
-| **Components** | 15+ |
-| **API Endpoints** | 20+ |
-| **Team Size** | Your Team |
-| **Status** | 🚀 Active Development |
+| **Core Dependencies** | 35+ |
+| **Dev Dependencies** | 10+ |
+| **React Components** | 15+ |
+| **UI Components** | 30+ (Shadcn/UI collection) |
+| **Pages** | 8 |
+| **API Endpoints** | 15+ |
+| **Team Status** | 🚀 Active Development |
 
 ---
 
