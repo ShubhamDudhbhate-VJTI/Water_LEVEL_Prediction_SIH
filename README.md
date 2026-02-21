@@ -103,9 +103,9 @@ This innovative platform combines **real-time water level monitoring**, **predic
 |------|-------|---------|
 | **OpenAI** | ![OpenAI](https://img.shields.io/badge/OpenAI-API-000000?style=flat-square&logo=openai) | LLM & Embeddings |
 | **Chroma** | ![Chroma](https://img.shields.io/badge/Chroma-Vector%20DB-FF6B6B?style=flat-square) | Vector Storage |
-| **Tesseract.js** | ![Tesseract](https://img.shields.io/badge/Tesseract.js-6.0-3ECF8E?style=flat-square) | OCR |
-| **Mammoth** | ![Mammoth](https://img.shields.io/badge/Mammoth-1.11-4285F4?style=flat-square) | Document ParsinDocument Processing |
-| **React Dropzone** | ![Dropzone](https://img.shields.io/badge/React%20Dropzone-14.3-00ADEF?style=flat-square) | File Upload Handl
+| **Tesseract.js** | ![Tesseract](https://img.shields.io/badge/Tesseract.js-6.0-3ECF8E?style=flat-square) | OCR Document Processing |
+| **React Dropzone** | ![Dropzone](https://img.shields.io/badge/React%20Dropzone-14.3-00ADEF?style=flat-square) | File Upload Handling |
+
 ### **Form & State Management**
 
 | Tech | Badge | Purpose |
