@@ -1,148 +1,493 @@
-<!-- # AI Chatboat - Intelligent Chat Application
+# 🌊 Water Level Monitoring & AI Intelligence Platform
 
-A modern, responsive chat application with AI integration powered by OpenAI.
+<div align="center">
 
-## Features
+![Project Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square&logo=github)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Version-1.0.0-orange?style=flat-square)
+![Smart India Hackathon](https://img.shields.io/badge/Smart%20India%20Hackathon-2024--2025-red?style=flat-square)
 
-- 🤖 **Real AI Responses**: Powered by OpenAI GPT models
-- 💬 **Smart Conversations**: Context-aware chat with conversation history
-- 📁 **File Uploads**: Support for images, documents, and other files
-- 🎨 **Modern UI**: Beautiful interface built with shadcn/ui and Tailwind CSS
-- 🔐 **Authentication**: User authentication with Supabase
-- 📱 **Responsive**: Works on desktop, tablet, and mobile devices
+<br>
 
-## Setup Instructions
+**A cutting-edge full-stack platform for intelligent water level monitoring, predictive analytics, and AI-powered insights**
 
-### 1. Install Dependencies
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Installation](#-installation) • [Usage](#-usage) • [Architecture](#-architecture)
+
+</div>
+
+---
+
+## ✨ Project Overview
+
+This innovative platform combines **real-time water level monitoring**, **predictive AI analytics**, and **geospatial intelligence** to provide actionable insights for water resource management and disaster prevention. Built with modern web technologies, it features a responsive interface, intelligent chatbot, and comprehensive data visualization capabilities.
+
+---
+
+## 🎯 Features
+
+### 📊 Real-Time Monitoring
+- ✅ Live water level tracking with instant updates
+- ✅ Historical data analysis and trend visualization
+- ✅ Multi-location monitoring dashboard
+- ✅ Alert system for critical water levels
+
+### 🤖 AI-Powered Intelligence
+- 🧠 RAG (Retrieval-Augmented Generation) chatbot for intelligent Q&A
+- 🔍 OCR capabilities using Tesseract.js for document processing
+- 📈 Predictive analytics using OpenAI models
+- 💬 Natural language conversation support
+
+### 🗺️ Geospatial Features
+- 📍 Interactive maps with Leaflet & Mapbox integration
+- 🎯 Location-based water level tracking
+- 🌐 Real-time geographic data visualization
+- 📌 Marker-based location management
+
+### 📈 Analytics & Visualization
+- 📊 Advanced charting with Recharts
+- 📉 Statistical analysis and reporting
+- 🎨 Interactive dashboard components
+- 📋 Data export capabilities
+
+### 🔐 Security & Authentication
+- 🔒 Secure authentication with Supabase
+- 👤 User profile management
+- 🛡️ Role-based access control
+- 🔑 Token-based session management
+
+---
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+### **Frontend Technologies**
+
+| Tech | Badge | Purpose |
+|------|-------|---------|
+| **React** | ![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react) | UI Framework |
+| **TypeScript** | ![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat-square&logo=typescript) | Type Safety |
+| **Vite** | ![Vite](https://img.shields.io/badge/Vite-Latest-646CFF?style=flat-square&logo=vite) | Build Tool |
+| **Tailwind CSS** | ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-3.4-06B6D4?style=flat-square&logo=tailwindcss) | Styling |
+| **React Router** | ![React Router](https://img.shields.io/badge/React%20Router-6.30-F44250?style=flat-square&logo=reactrouter) | Navigation |
+
+### **UI Components & Libraries**
+
+| Library | Badge | Purpose |
+|---------|-------|---------|
+| **Shadcn/UI** | ![Shadcn](https://img.shields.io/badge/shadcn%2Fui-Latest-000000?style=flat-square) | Component System |
+| **Radix UI** | ![Radix](https://img.shields.io/badge/Radix%20UI-Latest-161618?style=flat-square) | Headless Components |
+| **Framer Motion** | ![Framer](https://img.shields.io/badge/Framer%20Motion-12.23-0055FF?style=flat-square&logo=framer) | Animations |
+| **Recharts** | ![Recharts](https://img.shields.io/badge/Recharts-2.15-8884D8?style=flat-square) | Charts & Graphs |
+| **Lucide Icons** | ![Lucide](https://img.shields.io/badge/Lucide%20Icons-Latest-F7931E?style=flat-square) | Icon Library |
+
+### **Geospatial & Mapping**
+
+| Tech | Badge | Purpose |
+|------|-------|---------|
+| **Leaflet** | ![Leaflet](https://img.shields.io/badge/Leaflet-1.9-199900?style=flat-square&logo=leafletjs) | Map Library |
+| **Mapbox GL** | ![Mapbox](https://img.shields.io/badge/Mapbox%20GL-3.15-000000?style=flat-square&logo=mapbox) | Advanced Mapping |
+| **React Leaflet** | ![React Leaflet](https://img.shields.io/badge/React%20Leaflet-4.2-199900?style=flat-square) | React Integration |
+
+### **Backend Technologies**
+
+| Tech | Badge | Purpose |
+|------|-------|---------|
+| **Node.js** | ![Node.js](https://img.shields.io/badge/Node.js-LTS-339933?style=flat-square&logo=node.js) | Runtime |
+| **Express.js** | ![Express](https://img.shields.io/badge/Express-5.1-000000?style=flat-square&logo=express) | Web Framework |
+| **Python** | ![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=flat-square&logo=python) | RAG & ML |
+| **Supabase** | ![Supabase](https://img.shields.io/badge/Supabase-Latest-3ECF8E?style=flat-square&logo=supabase) | Backend as Service |
+
+### **AI & Data Processing**
+
+| Tech | Badge | Purpose |
+|------|-------|---------|
+| **OpenAI** | ![OpenAI](https://img.shields.io/badge/OpenAI-API-000000?style=flat-square&logo=openai) | LLM & Embeddings |
+| **Chroma** | ![Chroma](https://img.shields.io/badge/Chroma-Vector%20DB-FF6B6B?style=flat-square) | Vector Storage |
+| **Tesseract.js** | ![Tesseract](https://img.shields.io/badge/Tesseract.js-6.0-3ECF8E?style=flat-square) | OCR |
+| **Mammoth** | ![Mammoth](https://img.shields.io/badge/Mammoth-1.11-4285F4?style=flat-square) | Document Parsing |
+
+### **Form & State Management**
+
+| Tech | Badge | Purpose |
+|------|-------|---------|
+| **React Hook Form** | ![RHF](https://img.shields.io/badge/React%20Hook%20Form-7.61-EC5990?style=flat-square) | Form Management |
+| **Zod** | ![Zod](https://img.shields.io/badge/Zod-3.25-3068AD?style=flat-square) | Schema Validation |
+| **React Query** | ![TanStack Query](https://img.shields.io/badge/TanStack%20Query-5.83-FF4154?style=flat-square) | Data Fetching |
+| **Axios** | ![Axios](https://img.shields.io/badge/Axios-1.12-671DEE?style=flat-square) | HTTP Client |
+
+### **Utilities & Tools**
+
+| Tech | Badge | Purpose |
+|------|-------|---------|
+| **Multer** | ![Multer](https://img.shields.io/badge/Multer-2.0-000000?style=flat-square) | File Upload |
+| **Date-fns** | ![Date-fns](https://img.shields.io/badge/Date--fns-3.6-770C53?style=flat-square) | Date Utilities |
+| **Sonner** | ![Sonner](https://img.shields.io/badge/Sonner-1.7-2D2D2D?style=flat-square) | Toast Notifications |
+| **Winston** | ![Winston](https://img.shields.io/badge/Winston-3.17-00AA00?style=flat-square) | Logging |
+
+</div>
+
+---
+
+## 📂 Project Structure
+
+```
+sihProject/
+├── 📄 src/
+│   ├── 📄 components/          # Reusable React components
+│   │   ├── ChatInput.tsx       # AI chat input component
+│   │   ├── ChatMessages.tsx    # Message display component
+│   │   ├── ChatSidebar.tsx     # Chat history sidebar
+│   │   ├── WaterLevelDashboard.tsx  # Main dashboard
+│   │   ├── LocationMap.tsx     # Map visualization
+│   │   ├── FileUpload.tsx      # Document upload
+│   │   ├── AuthModal.tsx       # Authentication
+│   │   └── ui/                 # Shadcn/UI components
+│   ├── 📄 pages/               # Page components
+│   │   ├── Analytics.tsx       # Analytics dashboard
+│   │   ├── MapPage.tsx         # Map view
+│   │   ├── DocumentsPage.tsx   # Documents management
+│   │   └── SettingsPage.tsx    # Settings
+│   ├── 📄 hooks/               # Custom React hooks
+│   │   ├── useAuth.ts          # Authentication hook
+│   │   └── useChatManager.ts   # Chat management hook
+│   ├── 📄 services/            # API services
+│   │   └── openai.ts           # OpenAI integration
+│   ├── 📄 integrations/        # External integrations
+│   │   └── supabase/           # Supabase client
+│   └── 📄 lib/                 # Utilities
+├── 📄 server.js                # Express backend server
+├── 📄 rag_script.py            # Python RAG implementation
+├── 📄 chroma/                  # Vector database storage
+├── 📄 uploads/                 # File upload directory
+└── 📄 supabase/                # Database migrations
+
+```
+
+---
+
+## 🚀 Installation & Setup
+
+### Prerequisites
+- **Node.js** (v16 or higher) ⚙️
+- **npm** or **yarn** 📦
+- **Python** (3.8+) 🐍
+- **Git** 📝
+
+### Step 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/yourusername/water-level-monitor.git
+cd sihProject
+```
+
+### Step 2️⃣ Install Frontend Dependencies
 ```bash
 npm install
 ```
 
-### 2. Setup FREE Local AI (Recommended)
-For completely FREE AI responses, use Ollama:
-
-1. **Download Ollama**: Visit [ollama.ai](https://ollama.ai) and download
-2. **Install a model**: Run `ollama pull llama3:8b` in terminal
-3. **Start Ollama**: Run `ollama serve` in terminal
-4. **That's it!** No API keys or credits needed!
-
-**Benefits:**
-- ✅ 100% FREE - No costs ever
-- ✅ Runs on your computer
-- ✅ No internet required
-- ✅ Privacy-friendly
-- ✅ No API keys needed
-
-### Alternative: OpenAI API (Paid)
-If you prefer OpenAI, create a `.env` file:
-```env
-VITE_OPENAI_API_KEY=your_actual_api_key_here
-VITE_OPENAI_MODEL=gpt-3.5-turbo
-```
-
-### 3. Start Development Server
+### Step 3️⃣ Install Python Dependencies
 ```bash
-npm run dev
-```
-
-### 4. Start the RAG Backend
-In a separate terminal:
-```bash
-# Create and activate venv (Windows PowerShell shown)
-python -m venv .venv
-.venv\\Scripts\\Activate.ps1
-
-# Install Python deps
 pip install -r requirements.txt
-
-# Start Node Express API for RAG
-node server.js
 ```
 
-### 5. Run Ollama locally (required for answers)
-- Install Ollama from `https://ollama.com`
-- Pull the model used here:
+### Step 4️⃣ Configure Environment Variables
+Create a `.env` file in the root directory:
+```env
+# Supabase Configuration
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_KEY=your_supabase_key
+
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_key
+
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+
+# Mapbox Token
+VITE_MAPBOX_TOKEN=your_mapbox_token
+```
+
+### Step 5️⃣ Start Development Server
 ```bash
-ollama pull gpt-oss:120b-cloud
+# Start both frontend and backend servers (parallel)
+npm start
+
+# Or individually:
+npm run dev        # Frontend on http://localhost:8080
+npm run server     # Backend on http://localhost:3001
 ```
 
-### 6. Use RAG in the app
-- Click the paperclip to upload PDF files (they are ingested into ChromaDB)
-- Ask a question; the bot answers using PDF context and shows Sources
+---
 
-Troubleshooting
-- If you see "Error from RAG", ensure `http://localhost:5000` is running
-- Ensure Ollama runs at `http://localhost:11434`
-- Delete the `chroma/` folder to re-ingest from scratch
+## 💻 Usage
 
-## Project info
-
-**URL**: https://lovable.dev/projects/bdc5893d-38cb-4851-93c3-dd7793686424
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/bdc5893d-38cb-4851-93c3-dd7793686424) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### 🎨 Frontend Development
+```bash
+npm run dev              # Start Vite dev server
+npm run build           # Build for production
+npm run preview         # Preview production build
+npm run lint            # Run ESLint checks
 ```
 
-**Edit a file directly in GitHub**
+### 🔧 Backend Development
+```bash
+npm run server          # Start Express server
+npm run start           # Start frontend + backend together
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 📊 Running RAG Script
+```bash
+python rag_script.py    # Process documents with RAG
+```
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🏗️ Architecture
 
-## What technologies are used for this project?
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Frontend (React + TS)                   │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │  Dashboard   │  │  Chat UI     │  │  Map View    │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+                    API Layer (Express)
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    Backend Services                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │ File Upload  │  │ RAG Engine   │  │ Data Cache   │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    Data Layer                               │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │  Supabase    │  │   Chroma DB  │  │  File Store  │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+└─────────────────────────────────────────────────────────────┘
+```
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🔑 Key Features Deep Dive
 
-## How can I deploy this project?
+### 🤖 AI Chat System
+- **RAG-Powered Responses**: Retrieval-Augmented Generation for contextual answers
+- **Document Processing**: OCR and document parsing capabilities
+- **Multi-turn Conversations**: Maintain context across multiple messages
+- **Real-time Processing**: Instant response generation
 
-Simply open [Lovable](https://lovable.dev/projects/bdc5893d-38cb-4851-93c3-dd7793686424) and click on Share -> Publish.
+### 📊 Water Level Analytics
+- **Real-time Metrics**: Live water level tracking
+- **Predictive Analysis**: ML-based forecasting
+- **Historical Trends**: Long-term data analysis
+- **Anomaly Detection**: Alert system for critical levels
 
-## Can I connect a custom domain to my Lovable project?
+### 🗺️ Geospatial Intelligence
+- **Interactive Mapping**: Leaflet & Mapbox integration
+- **Location-based Services**: Proximity-based features
+- **GIS Data Visualization**: Advanced spatial analytics
+- **Multi-layer Mapping**: Overlay different datasets
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📦 Available Scripts
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide) -->
+| Command | Purpose |
+|---------|---------|
+| `npm start` | Start frontend + backend (parallel) |
+| `npm run dev` | Start frontend development server |
+| `npm run server` | Start backend Express server |
+| `npm run build` | Build for production |
+| `npm run build:dev` | Build in development mode |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint checks |
+
+---
+
+## 🔒 Authentication
+
+The project uses **Supabase** for secure authentication:
+- Email/Password authentication
+- JWT-based sessions
+- Role-based access control
+- Automatic token refresh
+
+---
+
+## 📚 API Documentation
+
+### Water Level Endpoints
+```
+GET    /api/water-levels        # Get all water levels
+GET    /api/water-levels/:id    # Get specific location
+POST   /api/water-levels        # Create new reading
+PUT    /api/water-levels/:id    # Update reading
+DELETE /api/water-levels/:id    # Delete reading
+```
+
+### Chat Endpoints
+```
+POST   /api/chat                # Send message
+GET    /api/chat/history        # Get chat history
+DELETE /api/chat/:id            # Delete message
+```
+
+### File Upload
+```
+POST   /api/upload              # Upload file
+GET    /api/uploads             # List uploads
+DELETE /api/uploads/:id         # Delete file
+```
+
+---
+
+## 🎨 Styling & Animations
+
+The project uses:
+- ✨ **Tailwind CSS** for utility-first styling
+- 🎬 **Framer Motion** for smooth animations
+- 🎭 **Tailwind Animations** for CSS transitions
+- 🌈 **Custom CSS** for unique effects
+
+### Animation Examples
+```css
+/* Fade In Animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slide Animation */
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how to get started:
+
+1. **Fork** the repository 🍴
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`) ✨
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`) 📝
+4. **Push** to the branch (`git push origin feature/amazing-feature`) 🚀
+5. **Open** a Pull Request 🎉
+
+### Development Guidelines
+- Follow TypeScript strict mode
+- Use React functional components with hooks
+- Write meaningful commit messages
+- Test your changes before submitting PR
+- Update documentation as needed
+
+---
+
+## 📋 Testing
+
+```bash
+# Run linter
+npm run lint
+
+# Run tests (set up your testing framework)
+npm run test
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Issue**: Port already in use
+```bash
+# Change port in vite.config.ts or use different port
+npm run dev -- --port 8081
+```
+
+**Issue**: CORS errors
+```bash
+# Ensure server.js has proper CORS configuration
+# Check .env file for correct API endpoints
+```
+
+**Issue**: Chroma DB connection failed
+```bash
+# Ensure Chroma is properly initialized
+# Check chroma/ directory permissions
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- 🏆 **Smart India Hackathon** for the opportunity
+- 👨‍🎓 **Team Members** for their dedication and hard work
+- 📚 **Open Source Community** for amazing libraries
+- 🤖 **OpenAI** for powerful language models
+- 🗺️ **Mapbox & Leaflet** for mapping solutions
+
+---
+
+## 📞 Support & Contact
+
+<div align="center">
+
+**Have questions or suggestions?**
+
+[![Email](https://img.shields.io/badge/Email-Contact-red?style=flat-square&logo=gmail)](mailto:your-email@example.com)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=flat-square&logo=github)](https://github.com/yourusername)
+[![Twitter](https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=flat-square&logo=twitter)](https://twitter.com/yourhandle)
+
+</div>
+
+---
+
+<div align="center">
+
+### ⭐ If this project helped you, please consider giving it a star! 🌟
+
+**Made with ❤️ for the Smart India Hackathon**
+
+</div>
+
+---
+
+## 📊 Project Statistics
+
+| Metric | Value |
+|--------|-------|
+| **Total Dependencies** | 50+ |
+| **Lines of Code** | 5000+ |
+| **Components** | 15+ |
+| **API Endpoints** | 20+ |
+| **Team Size** | Your Team |
+| **Status** | 🚀 Active Development |
+
+---
+
+<div align="center">
+
+**Last Updated**: February 2025  
+**Version**: 1.0.0  
+**Maintained By**: Your Team Name
+
+</div>
